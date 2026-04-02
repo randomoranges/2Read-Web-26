@@ -1,0 +1,1 @@
+i want you build a landing page using react. i'll provide design section by section with screenshots.

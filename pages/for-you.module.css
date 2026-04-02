@@ -1,0 +1,514 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&display=swap');
+
+.pageWrapper {
+  --bg: #F9F8F6;
+  --text: #1A1A1A;
+  --text-muted: #666666;
+  --accent: #1A1A1A;
+  --accent-light: rgba(26, 26, 26, 0.08);
+  --accent-shadow: rgba(26, 26, 26, 0.2);
+  --card-bg: #FFFFFF;
+  --card-border: #E2DFD8;
+  --font-serif: 'Crimson Pro', serif;
+  --font-sans: 'Inter', sans-serif;
+
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark) .pageWrapper {
+  --bg: #121212;
+  --text: #F2F0EB;
+  --text-muted: #A0A0A0;
+  --card-bg: #1C1C1C;
+  --card-border: #333333;
+  --accent: #F2F0EB;
+  --accent-light: rgba(242, 240, 235, 0.1);
+  --accent-shadow: rgba(242, 240, 235, 0.15);
+}
+
+/* Screens */
+.screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5rem 2rem 6rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.screenActive {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.screenContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto 0;
+  width: 100%;
+  max-width: 600px;
+}
+
+/* Typography */
+.headline {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+
+.bodyText {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--text-muted);
+  max-width: 500px;
+  margin-bottom: 2rem;
+}
+
+.accentText {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Navigation Elements */
+.topNav {
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  display: flex;
+  gap: 1rem;
+  z-index: 50;
+}
+
+.iconButton {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.iconButton:hover {
+  background-color: var(--card-border);
+  color: var(--text);
+}
+
+.dotsContainer {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 50;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--card-border);
+  transition: background-color 0.3s ease;
+}
+
+.dotActive {
+  background-color: var(--accent);
+}
+
+/* Option Cards */
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+@media (max-width: 600px) {
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.optionCard {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  display: flex;
+  align-items: center;
+  line-height: 1.4;
+}
+
+.optionCard:hover {
+  border-color: var(--text-muted);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.optionCardSelected {
+  background-color: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.optionCardSelected:hover {
+  border-color: var(--accent);
+}
+
+/* Action Buttons */
+.nextButton {
+  background-color: var(--accent) !important;
+  color: var(--bg) !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 0 2rem !important;
+  height: 3.5rem !important;
+  font-size: 1.125rem !important;
+  font-weight: 500 !important;
+  font-family: var(--font-sans) !important;
+  cursor: pointer;
+  margin-top: 3rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 14px var(--accent-shadow) !important;
+}
+
+.nextButton:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.nextButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none !important;
+}
+
+.fixedBottomBtn {
+  margin-top: 3rem;
+}
+
+@media (max-width: 768px) {
+  .fixedBottomBtn {
+    position: fixed;
+    bottom: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 4rem);
+    max-width: 320px;
+    margin-top: 0;
+    z-index: 20;
+  }
+  .fixedBottomBtn:hover {
+    transform: translateX(-50%) translateY(-2px);
+  }
+  .fixedBottomBtn:disabled {
+    transform: translateX(-50%);
+  }
+}
+
+.textLink {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  margin-top: 1.5rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.textLink:hover {
+  color: var(--text);
+}
+
+/* Flow Diagrams */
+.diagramContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 3rem 0;
+}
+
+@media (max-width: 768px) {
+  .diagramContainer {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+.diagramNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  width: 80px;
+}
+
+.nodeIconWrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+:global(.dark) .nodeIconWrapper {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.nodeImage {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.nodeIcon {
+  color: var(--text);
+}
+
+.nodeLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.nodeSubLabel {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.diagramArrow {
+  color: var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .diagramArrow {
+    transform: rotate(90deg);
+  }
+}
+
+/* Comparison Box */
+.comparisonContainer {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+@media (max-width: 600px) {
+  .comparisonContainer {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.comparisonBox {
+  flex: 1;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comparisonTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-align: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.comparisonList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comparisonItem {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Step Lists */
+.stepList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 400px;
+  width: 100%;
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.stepItem {
+  font-size: 1.125rem;
+  color: var(--text);
+  line-height: 1.5;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.stepIcon {
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.stepNote {
+  background-color: var(--accent-light);
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  margin-top: 1rem;
+}
+
+.tipBox {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  max-width: 400px;
+  text-align: center;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .screen {
+    padding: 5rem 1.5rem 7rem;
+  }
+
+  .topNav {
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .iconButton {
+    padding: 0.25rem;
+  }
+
+  .headline {
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+    margin-bottom: 1.25rem;
+  }
+
+  .bodyText {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .optionCard {
+    padding: 1rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .optionsList {
+    gap: 0.625rem;
+  }
+
+  .optionsGrid {
+    gap: 0.75rem;
+  }
+
+  .nextButton {
+    height: 3rem !important;
+    font-size: 1rem !important;
+    margin-top: 1.5rem;
+  }
+
+  .fixedBottomBtn {
+    bottom: 4rem;
+  }
+
+  .diagramContainer {
+    margin: 1.5rem 0;
+  }
+
+  .comparisonContainer {
+    gap: 0.75rem;
+  }
+
+  .comparisonBox {
+    padding: 1rem;
+  }
+
+  .stepList {
+    gap: 1rem;
+  }
+
+  .stepItem {
+    font-size: 1rem;
+  }
+}

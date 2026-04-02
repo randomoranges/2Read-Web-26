@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+.pageWrapper {
+  --page-bg: #fafafa;
+  --text-main: #111111;
+  --text-muted: #666666;
+  --accent-color: #c66a3a;
+
+  background-color: var(--page-bg);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+  
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark) .pageWrapper {
+  --page-bg: #121212;
+  --text-main: #f5f0eb;
+  --text-muted: #a0a0a0;
+}
+
+.section {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: start;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
+}
+
+.content {
+  max-width: 700px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.content p {
+  margin: 0;
+}
+
+/* Typography Variations */
+
+.largeTitle {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin: 0;
+  font-weight: 500;
+}
+
+.largeText p {
+  font-size: 1.5rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+.mediumText p {
+  font-size: 1.75rem;
+  line-height: 1.8;
+}
+
+.normalText p {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+.minimalSpacing {
+  gap: 0;
+}
+
+.link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.link:hover {
+  opacity: 0.7;
+}
+
+.ctaWrapper {
+  margin-top: 2rem;
+}
+
+.ctaLink {
+  color: var(--accent-color);
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.ctaLink:hover {
+  opacity: 0.8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .largeTitle {
+    font-size: 2.25rem;
+  }
+  
+  .largeText p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+  }
+
+  .mediumText p {
+    font-size: 1.375rem;
+    line-height: 1.6;
+  }
+
+  .normalText p {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+  
+  .ctaLink {
+    font-size: 1.25rem;
+  }
+}

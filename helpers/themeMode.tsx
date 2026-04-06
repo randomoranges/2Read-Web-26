@@ -10,12 +10,11 @@ import React, {
 export type ThemeMode = "light" | "dark" | "auto";
 
 // Event mechanism to sync standalone functions with React Context
-type ThemeChangeListener = (mode: ThemeMode) => void;
+type ThemeChangeListener = () => void;
 const listeners = new Set<ThemeChangeListener>();
 
 function notifyThemeChange() {
-  const mode = getCurrentThemeMode();
-  listeners.forEach((listener) => listener(mode));
+  listeners.forEach((listener) => listener());
 }
 
 function subscribeToThemeChange(listener: ThemeChangeListener) {
@@ -39,7 +38,6 @@ let currentMediaQuery: MediaQueryList | null = null;
  * Switch to dark mode by adding the "dark" class to document.body.
  */
 export function switchToDarkMode(): void {
-  // Clear any auto mode listener if present.
   if (currentMediaQuery) {
     currentMediaQuery.onchange = null;
     currentMediaQuery = null;
@@ -52,7 +50,6 @@ export function switchToDarkMode(): void {
  * Switch to light mode by removing the "dark" class from document.body.
  */
 export function switchToLightMode(): void {
-  // Clear any auto mode listener if present.
   if (currentMediaQuery) {
     currentMediaQuery.onchange = null;
     currentMediaQuery = null;
@@ -62,9 +59,8 @@ export function switchToLightMode(): void {
 }
 
 /**
- * Switch to auto mode. This function immediately applies the user's color scheme preference
- * and listens for system preference changes to update the theme automatically.
- * It uses the onchange property instead of addEventListener to avoid TypeScript issues.
+ * Switch to auto mode. Immediately applies the system color scheme preference
+ * and listens for changes.
  */
 export function switchToAutoMode(): void {
   if (currentMediaQuery) {
@@ -73,6 +69,7 @@ export function switchToAutoMode(): void {
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
   mediaQuery.onchange = (e: MediaQueryListEvent) => {
     updateTheme(e.matches);
+    notifyThemeChange();
   };
   currentMediaQuery = mediaQuery;
   updateTheme(mediaQuery.matches);
@@ -80,10 +77,7 @@ export function switchToAutoMode(): void {
 }
 
 /**
- * Returns the current theme mode:
- * - "auto" if auto mode is enabled,
- * - "dark" if the document body has the "dark" class,
- * - "light" otherwise.
+ * Returns the current theme mode setting.
  */
 export function getCurrentThemeMode(): ThemeMode {
   if (currentMediaQuery) {
@@ -92,10 +86,23 @@ export function getCurrentThemeMode(): ThemeMode {
   return document.body.classList.contains("dark") ? "dark" : "light";
 }
 
+/**
+ * Returns the effective theme ("light" | "dark") by checking the body class.
+ */
+export function getResolvedTheme(): "light" | "dark" {
+  return document.body.classList.contains("dark") ? "dark" : "light";
+}
+
+// Apply auto mode immediately on module load, before any React render.
+// This ensures the body class and initial state are correct from the start.
+switchToAutoMode();
+
 // -- React Context & Provider --
 
 interface ThemeModeContextValue {
   mode: ThemeMode;
+  /** The effective theme — always "light" or "dark", never "auto" */
+  resolvedMode: "light" | "dark";
   switchToDarkMode: () => void;
   switchToLightMode: () => void;
   switchToAutoMode: () => void;
@@ -104,24 +111,27 @@ interface ThemeModeContextValue {
 const ThemeModeContext = createContext<ThemeModeContextValue | null>(null);
 
 export function ThemeModeProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<ThemeMode>(() => getCurrentThemeMode());
+  const [, forceUpdate] = useState(0);
 
   useEffect(() => {
-    // Subscribe to changes triggered by standalone functions
-    const unsubscribe = subscribeToThemeChange((newMode) => {
-      setMode(newMode);
+    const unsubscribe = subscribeToThemeChange(() => {
+      forceUpdate((n) => n + 1);
     });
     return unsubscribe;
   }, []);
 
+  const mode = getCurrentThemeMode();
+  const resolvedMode = getResolvedTheme();
+
   const value = useMemo(
     () => ({
       mode,
+      resolvedMode,
       switchToDarkMode,
       switchToLightMode,
       switchToAutoMode,
     }),
-    [mode],
+    [mode, resolvedMode],
   );
 
   return (

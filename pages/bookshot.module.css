@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Individual Book Page ── */
+.pageWrapper {
+  --page-bg: #fafafa;
+  --text-main: #111111;
+  --text-muted: #555555;
+  --border-color: #e5e5e5;
+  --card-bg: #ffffff;
+  --accent: #6366f1;
+  --accent-soft: #eef2ff;
+  --player-bg: #ffffff;
+  --player-shadow: 0 -1px 12px rgba(0, 0, 0, 0.08);
+
+  background-color: var(--page-bg);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+}
+
+:global(.dark) .pageWrapper {
+  --page-bg: #0a0a0a;
+  --text-main: #e5e5e5;
+  --text-muted: #a0a0a0;
+  --border-color: #1f1f1f;
+  --card-bg: #141414;
+  --accent: #818cf8;
+  --accent-soft: #1e1b4b;
+  --player-bg: #141414;
+  --player-shadow: 0 -1px 12px rgba(0, 0, 0, 0.4);
+}
+
+.container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 10rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--text-main);
+}
+
+/* ── Book Header ── */
+.bookHeader {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+  align-items: flex-start;
+}
+
+.bookCover {
+  width: 160px;
+  min-width: 160px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.bookMeta {
+  flex: 1;
+}
+
+.bookCategory {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.bookTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.5rem;
+}
+
+.bookAuthor {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin: 0 0 1.25rem;
+}
+
+.buyLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.buyLink:hover {
+  opacity: 0.8;
+}
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 0 0 2.5rem;
+}
+
+/* ── Markdown Content ── */
+.markdownContent {
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.markdownContent h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 2.5rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.markdownContent h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+}
+
+.markdownContent p {
+  margin: 0 0 1.25rem;
+  color: var(--text-main);
+}
+
+.markdownContent blockquote {
+  border-left: 3px solid var(--accent);
+  margin: 1.5rem 0;
+  padding: 0.75rem 1.25rem;
+  background: var(--accent-soft);
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+}
+
+.markdownContent blockquote p {
+  margin: 0;
+}
+
+.markdownContent ul,
+.markdownContent ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.markdownContent li {
+  margin-bottom: 0.5rem;
+}
+
+.markdownContent strong {
+  font-weight: 600;
+}
+
+.markdownContent hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2rem 0;
+}
+
+/* ── Sticky Audio Player ── */
+.audioPlayer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--player-bg);
+  box-shadow: var(--player-shadow);
+  border-top: 1px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  z-index: 50;
+}
+
+.playerInner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.playerBookInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.playerCover {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.playerTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.playButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.playButton:hover {
+  opacity: 0.85;
+}
+
+.progressWrapper {
+  flex: 1;
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progressBar {
+  flex: 1;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+.timeDisplay {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.speedButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.speedButton:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .container {
+    padding: 2rem 1rem 9rem;
+  }
+
+  .bookHeader {
+    gap: 1.25rem;
+  }
+
+  .bookCover {
+    width: 110px;
+    min-width: 110px;
+  }
+
+  .bookTitle {
+    font-size: 1.5rem;
+  }
+
+  .bookAuthor {
+    font-size: 0.9375rem;
+  }
+
+  .markdownContent {
+    font-size: 0.9375rem;
+  }
+
+  .playerBookInfo {
+    display: none;
+  }
+
+  .audioPlayer {
+    padding: 0.6rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .bookHeader {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .bookCover {
+    width: 140px;
+  }
+
+  .bookTitle {
+    font-size: 1.35rem;
+  }
+}

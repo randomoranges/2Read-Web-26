@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.pageWrapper {
+  --page-bg: #fafafa;
+  --text-main: #111111;
+  --text-muted: #555555;
+  --border-color: #e5e5e5;
+
+  background-color: var(--page-bg);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark) .pageWrapper {
+  --page-bg: #121212;
+  --text-main: #e5e5e5;
+  --text-muted: #a0a0a0;
+  --border-color: #2a2a2a;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 2.5rem;
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--text-main);
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.lastUpdated {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0 0 3rem;
+  font-weight: 500;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 3rem 0 1rem;
+  letter-spacing: -0.01em;
+}
+
+.sectionSubtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+}
+
+.body p {
+  margin: 0 0 1rem;
+  color: var(--text-main);
+  font-size: 0.9375rem;
+}
+
+.body ul,
+.body ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.body li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.body a {
+  color: var(--text-main);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s ease;
+}
+
+.body a:hover {
+  opacity: 0.7;
+}
+
+.inShort {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin-bottom: 1rem;
+}
+
+.toc {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+}
+
+.toc li {
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+.toc a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.toc a:hover {
+  color: var(--text-main);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 3rem 0;
+}
+
+.contactBlock {
+  font-size: 0.9375rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  .pageTitle {
+    font-size: 1.75rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.125rem;
+  }
+}

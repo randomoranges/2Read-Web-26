@@ -7,7 +7,7 @@ import { useThemeMode } from "../helpers/themeMode";
 import styles from "./pricing.module.css";
 
 export default function PricingPage() {
-  const { mode, switchToLightMode, switchToDarkMode } = useThemeMode();
+  const { resolvedMode, switchToLightMode, switchToDarkMode } = useThemeMode();
   const [isYearly, setIsYearly] = useState(true);
   const [isIndia, setIsIndia] = useState(false);
 
@@ -23,7 +23,7 @@ export default function PricingPage() {
   }, []);
 
   const toggleTheme = () => {
-    if (mode === "dark") {
+    if (resolvedMode === "dark") {
       switchToLightMode();
     } else {
       switchToDarkMode();
@@ -118,7 +118,7 @@ export default function PricingPage() {
         <div className={styles.headerContainer}>
           <Link to="/" className={styles.logoArea}>
             <img 
-              src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f82d0da-f9e9-408e-aea7-e971d0e65121.png" 
+              src="/images/logo.png" 
               alt="2Read logo" 
               className={styles.logoImage} 
             />
@@ -130,8 +130,8 @@ export default function PricingPage() {
               onClick={toggleTheme}
               aria-label="Toggle theme"
             >
-              <div className={`${styles.themeTogglePill} ${mode === "dark" ? styles.themeTogglePillDark : ""}`}>
-                {mode === "dark" ? <Moon size={14} className={styles.themeToggleIcon} /> : <Sun size={14} className={styles.themeToggleIcon} />}
+              <div className={`${styles.themeTogglePill} ${resolvedMode === "dark" ? styles.themeTogglePillDark : ""}`}>
+                {resolvedMode === "dark" ? <Moon size={14} className={styles.themeToggleIcon} /> : <Sun size={14} className={styles.themeToggleIcon} />}
               </div>
             </button>
             <Button asChild className={styles.getAppBtn}>
@@ -309,7 +309,7 @@ export default function PricingPage() {
         <div className={styles.container}>
           <div className={styles.footerLogo}>
             <img 
-              src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f82d0da-f9e9-408e-aea7-e971d0e65121.png" 
+              src="/images/logo.png" 
               alt="2Read app logo" 
               className={styles.logoImage} 
             />
@@ -341,7 +341,7 @@ export default function PricingPage() {
           <div className={styles.footerBottom}>
             <p>© 2026 2Read. Built for readers who mean it.</p>
             <div className={styles.creatorInfo}>
-              <img src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/450e979b-0f1e-41cf-b7cb-fb167d8f357a.png" alt="Creator Jishnu's avatar" className={styles.creatorLogo} />
+              <img src="/images/creator-avatar.png" alt="Creator Jishnu's avatar" className={styles.creatorLogo} />
               <p>Created by <a href="#" className={styles.creatorLink}>1truejishnu</a></p>
             </div>
           </div>

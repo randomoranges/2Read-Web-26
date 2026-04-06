@@ -9,8 +9,8 @@ import styles from "./for-you.module.css";
 
 // Assets
 const ICONS = {
-  tworead: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/91868cd9-cec8-487c-8628-432893d7844c.png",
-  kindle: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4c248bd9-417c-45be-a500-e454e6a28e93.png",
+  tworead: "/images/icon-tworead.png",
+  kindle: "/images/icon-kindle.png",
 };
 
 // --- Diagram Component ---

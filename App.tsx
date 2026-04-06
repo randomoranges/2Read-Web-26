@@ -9,21 +9,31 @@ import Page_2 from "./pages/for-you.tsx";
 import PageLayout_2 from "./pages/for-you.pageLayout.tsx";
 import Page_3 from "./pages/pricing.tsx";
 import PageLayout_3 from "./pages/pricing.pageLayout.tsx";
+import Page_4 from "./pages/terms.tsx";
+import PageLayout_4 from "./pages/terms.pageLayout.tsx";
+import Page_5 from "./pages/privacy.tsx";
+import PageLayout_5 from "./pages/privacy.pageLayout.tsx";
+import Page_6 from "./pages/bookshots.tsx";
+import PageLayout_6 from "./pages/bookshots.pageLayout.tsx";
+import BookShotPage from "./pages/bookshot.tsx";
 
 if (!window.requestIdleCallback) {
-  window.requestIdleCallback = (cb) => {
+  (window as any).requestIdleCallback = (cb: IdleRequestCallback) => {
     setTimeout(cb, 1);
   };
 }
 
 import "./base.css";
 
-const fileNameToRoute = new Map([["./pages/about.tsx","/about"],["./pages/_index.tsx","/"],["./pages/for-you.tsx","/for-you"],["./pages/pricing.tsx","/pricing"]]);
+const fileNameToRoute = new Map([["./pages/about.tsx","/about"],["./pages/_index.tsx","/"],["./pages/for-you.tsx","/for-you"],["./pages/pricing.tsx","/pricing"],["./pages/terms.tsx","/terms"],["./pages/privacy.tsx","/privacy"],["./pages/bookshots.tsx","/bookshots"]]);
 const fileNameToComponent = new Map([
     ["./pages/about.tsx", Page_0],
 ["./pages/_index.tsx", Page_1],
 ["./pages/for-you.tsx", Page_2],
 ["./pages/pricing.tsx", Page_3],
+["./pages/terms.tsx", Page_4],
+["./pages/privacy.tsx", Page_5],
+["./pages/bookshots.tsx", Page_6],
   ]);
 
 function makePageRoute(filename: string) {
@@ -128,7 +138,11 @@ export function App() {
 "./pages/_index.tsx": PageLayout_1,
 "./pages/for-you.tsx": PageLayout_2,
 "./pages/pricing.tsx": PageLayout_3,
+"./pages/terms.tsx": PageLayout_4,
+"./pages/privacy.tsx": PageLayout_5,
+"./pages/bookshots.tsx": PageLayout_6,
 }), fileNameToRoute, makePageRoute })} 
+          <Route path="/bookshots/:slug" element={<BookShotPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </GlobalContextProviders>

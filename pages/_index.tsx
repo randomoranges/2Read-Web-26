@@ -19,12 +19,12 @@ const showcaseTabs = [
     caption: "Your highlights, organized by book.",
     images: [
       {
-        imgLight: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/a8eeffb2-a124-4e3f-8337-ee7a20934c7a.png",
-        imgDark: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/532eac47-bf63-4737-a645-6d1e6af5b0d9.png",
+        imgLight: "/images/highlights-1-light.png",
+        imgDark: "/images/highlights-1-dark.png",
       },
       {
-        imgLight: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/2291a6b7-4b1f-43ee-944e-8b12c7a547df.png",
-        imgDark: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/8bdc9f1c-ccb4-4f22-b2cb-68f66c923633.png",
+        imgLight: "/images/highlights-2-light.png",
+        imgDark: "/images/highlights-2-dark.png",
       }
     ]
   },
@@ -32,15 +32,15 @@ const showcaseTabs = [
     id: "summaries",
     label: "Summaries",
     caption: "AI-powered summaries in one tap.",
-    imgLight: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f17ec42-9464-473b-b99c-ca297369dd9d.png",
-    imgDark: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f17ec42-9464-473b-b99c-ca297369dd9d.png",
+    imgLight: "/images/summaries.png",
+    imgDark: "/images/summaries.png",
   },
   {
     id: "streaks",
     label: "Streaks",
     caption: "Build your reading streak.",
-    imgLight: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/35dc8b06-72b1-4d31-a3e3-de92e19dee61.png",
-    imgDark: "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/9243cd6e-9ee7-42da-8a82-323a7b029b2b.png",
+    imgLight: "/images/streaks-light.png",
+    imgDark: "/images/streaks-dark.png",
   },
   {
     id: "more",
@@ -56,7 +56,7 @@ export default function LandingPage() {
   const [syncToggle, setSyncToggle] = useState<"kindle" | "sideloaded">("kindle");
   const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
 
-  const { mode, switchToLightMode, switchToDarkMode } = useThemeMode();
+  const { resolvedMode, switchToLightMode, switchToDarkMode } = useThemeMode();
 
   const [showPlayStoreQR, setShowPlayStoreQR] = useState(false);
   const [showAppStoreQR, setShowAppStoreQR] = useState(false);
@@ -94,7 +94,7 @@ export default function LandingPage() {
   };
 
   const toggleTheme = () => {
-    if (mode === "dark") {
+    if (resolvedMode === "dark") {
       switchToLightMode();
     } else {
       switchToDarkMode();
@@ -119,11 +119,11 @@ export default function LandingPage() {
         <meta property="og:url" content="https://2read.app" />
         <meta property="og:site_name" content="2Read" />
         <meta property="og:locale" content="en_US" />
-        <meta property="og:image" content="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/bbf7cc44-d2b6-4c1b-b7c4-232897c6dd97.png" />
+        <meta property="og:image" content="https://2read.app/images/hero-light.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="2Read | Your Kindle highlights. One swipe at a time." />
         <meta name="twitter:description" content="2Read captures your Kindle highlights and turns them into beautiful, swipeable cards you'll actually revisit." />
-        <meta name="twitter:image" content="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/bbf7cc44-d2b6-4c1b-b7c4-232897c6dd97.png" />
+        <meta name="twitter:image" content="https://2read.app/images/hero-light.png" />
         <link rel="canonical" href="https://2read.app" />
         <script type="application/ld+json">
           {JSON.stringify({
@@ -151,7 +151,7 @@ export default function LandingPage() {
                 "@type": "Organization",
                 "name": "2Read",
                 "url": "https://2read.app",
-                "logo": "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f82d0da-f9e9-408e-aea7-e971d0e65121.png"
+                "logo": "https://2read.app/images/logo.png"
               },
               {
                 "@type": "FAQPage",
@@ -211,9 +211,9 @@ export default function LandingPage() {
         <div className={styles.headerContainer}>
           <div className={styles.logoArea}>
             <img 
-              src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f82d0da-f9e9-408e-aea7-e971d0e65121.png" 
-              alt="2Read logo" 
-              className={styles.logoImage} 
+              src="/images/logo.png"
+              alt="2Read logo"
+              className={styles.logoImage}
             />
             <span className={styles.logoText}>2Read.</span>
           </div>
@@ -223,8 +223,8 @@ export default function LandingPage() {
               onClick={toggleTheme}
               aria-label="Toggle theme"
             >
-              <div className={`${styles.themeTogglePill} ${mode === "dark" ? styles.themeTogglePillDark : ""}`}>
-                {mode === "dark" ? <Moon size={14} className={styles.themeToggleIcon} /> : <Sun size={14} className={styles.themeToggleIcon} />}
+              <div className={`${styles.themeTogglePill} ${resolvedMode === "dark" ? styles.themeTogglePillDark : ""}`}>
+                {resolvedMode === "dark" ? <Moon size={14} className={styles.themeToggleIcon} /> : <Sun size={14} className={styles.themeToggleIcon} />}
               </div>
             </button>
             <Button className={styles.getAppBtn}>Get the app</Button>
@@ -250,9 +250,9 @@ export default function LandingPage() {
 
             <div className={styles.phoneMockupContainer}>
               <img 
-                src={mode === "dark" 
-                  ? "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/6c03223a-5d36-43c0-9993-60d9d44521f4.png" 
-                  : "https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/bbf7cc44-d2b6-4c1b-b7c4-232897c6dd97.png"} 
+                src={resolvedMode === "dark" 
+                  ? "/images/hero-dark.png"
+                  : "/images/hero-light.png"} 
                 alt="2Read app showing Kindle highlights organized as swipeable cards" 
                 className={styles.heroMockupImage} 
               />
@@ -260,10 +260,10 @@ export default function LandingPage() {
 
             <div className={styles.phEmbeds}>
               <a href="https://www.producthunt.com/products/2read-3/launches/2read-4?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_campaign=badge-2read-4" target="_blank" rel="noopener noreferrer">
-                <img alt="2Read - AI Kindle Reading Buddy | Product Hunt Top Post Badge" width="250" height="54" src={`https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=695205&theme=${mode === 'dark' ? 'dark' : 'light'}&period=daily&t=1774880084972`} />
+                <img alt="2Read - AI Kindle Reading Buddy | Product Hunt Top Post Badge" width="250" height="54" src={`https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=695205&theme=${resolvedMode === 'dark' ? 'dark' : 'light'}&period=daily&t=1774880084972`} />
               </a>
               <a href="https://www.producthunt.com/products/2read-3/launches/2read-4?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_campaign=badge-2read-4" target="_blank" rel="noopener noreferrer">
-                <img alt="2Read - AI Kindle Reading Buddy | Product Hunt Weekly Topic Badge" width="250" height="54" src={`https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=695205&theme=${mode === 'dark' ? 'dark' : 'light'}&period=weekly&topic_id=46&t=1774880084972`} />
+                <img alt="2Read - AI Kindle Reading Buddy | Product Hunt Weekly Topic Badge" width="250" height="54" src={`https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=695205&theme=${resolvedMode === 'dark' ? 'dark' : 'light'}&period=weekly&topic_id=46&t=1774880084972`} />
               </a>
             </div>
             
@@ -358,7 +358,7 @@ export default function LandingPage() {
                         className={`${styles.showcaseCustomContent} ${activeShowcaseTab === idx ? styles.activeScreenshot : ""}`}
                       >
                         <img 
-                          src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f82d0da-f9e9-408e-aea7-e971d0e65121.png" 
+                          src="/images/logo.png"
                           alt="2Read app icon" 
                           className={styles.showcaseAppIcon}
                         />
@@ -371,7 +371,7 @@ export default function LandingPage() {
                     return tab.images.map((imgPair, subIdx) => (
                       <img
                         key={`${tab.id}-${subIdx}`}
-                        src={mode === "dark" ? imgPair.imgDark : imgPair.imgLight}
+                        src={resolvedMode === "dark" ? imgPair.imgDark : imgPair.imgLight}
                         alt={`${tab.label} ${subIdx + 1}`}
                         className={`${styles.showcaseScreenshot} ${activeShowcaseTab === idx && activeSubTab === subIdx ? styles.activeScreenshot : ""}`}
                       />
@@ -381,7 +381,7 @@ export default function LandingPage() {
                   return (
                     <img
                       key={tab.id}
-                      src={mode === "dark" ? tab.imgDark : tab.imgLight}
+                      src={resolvedMode === "dark" ? tab.imgDark : tab.imgLight}
                       alt={tab.label}
                       className={`${styles.showcaseScreenshot} ${activeShowcaseTab === idx ? styles.activeScreenshot : ""}`}
                     />
@@ -632,9 +632,11 @@ export default function LandingPage() {
 
                             <p className={styles.ctaBottomNote}>
                 Works with the free Kindle app · No Kindle device required
+                <br />
+                Works with your own PDFs and documents too
               </p>
               <Link to="/for-you" className={styles.footerCtaLink}>
-                Not sure if 2Read is for you? Find out in 60 seconds →
+                Show me how this works for me →
               </Link>
             </div>
           </div>
@@ -646,9 +648,9 @@ export default function LandingPage() {
         <div className={styles.container}>
           <div className={styles.footerLogo}>
             <img 
-              src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/4f82d0da-f9e9-408e-aea7-e971d0e65121.png" 
-              alt="2Read logo" 
-              className={styles.logoImage} 
+              src="/images/logo.png"
+              alt="2Read logo"
+              className={styles.logoImage}
             />
             <span className={styles.logoText}>2Read.</span>
           </div>
@@ -667,7 +669,7 @@ export default function LandingPage() {
             <div className={styles.footerCol}>
               <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Medium</a>
               <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Substack</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Producthunt</a>
+              <Link to="/bookshots" className={styles.footerLinkAccent}>BookShots</Link>
             </div>
             <div className={styles.footerCol}>
               <Link to="/privacy" className={styles.footerLink}>Privacy</Link>
@@ -678,7 +680,7 @@ export default function LandingPage() {
           <div className={styles.footerBottom}>
             <p>© 2026 2Read. Built for readers who mean it.</p>
             <div className={styles.creatorInfo}>
-              <img src="https://assets.floot.app/ed51f4b9-d12e-4afb-8da0-196f5f2e8f74/450e979b-0f1e-41cf-b7cb-fb167d8f357a.png" alt="Creator logo" className={styles.creatorLogo} />
+              <img src="/images/creator-avatar.png" alt="Creator logo" className={styles.creatorLogo} />
               <p>Created by <a href="#" className={styles.creatorLink}>1truejishnu</a></p>
             </div>
           </div>

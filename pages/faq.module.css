@@ -1,0 +1,356 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+.pageWrapper {
+  --page-bg: #fafafa;
+  --text-main: #111111;
+  --text-muted: #555555;
+  --border-color: #e5e5e5;
+  --card-bg: #ffffff;
+  --accent: #6366f1;
+  --accent-soft: #eef2ff;
+  --hover-bg: #f5f5f5;
+
+  background-color: var(--page-bg);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  min-height: 100vh;
+}
+
+:global(.dark) .pageWrapper {
+  --page-bg: #0a0a0a;
+  --text-main: #e5e5e5;
+  --text-muted: #a0a0a0;
+  --border-color: #1f1f1f;
+  --card-bg: #141414;
+  --accent: #818cf8;
+  --accent-soft: #1e1b4b;
+  --hover-bg: #1a1a1a;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 6rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  transition: color 0.2s ease;
+}
+
+.backLink:hover {
+  color: var(--text-main);
+}
+
+/* ── Hero ── */
+.hero {
+  margin-bottom: 3rem;
+}
+
+.pageTitle {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.75rem;
+}
+
+.pageSubtitle {
+  font-size: 1.0625rem;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 520px;
+  line-height: 1.6;
+}
+
+/* ── Category Nav ── */
+.categoryNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+  position: sticky;
+  top: 0;
+  background: var(--page-bg);
+  padding: 1rem 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.categoryNavLink {
+  padding: 0.4rem 1rem;
+  border-radius: 100px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.categoryNavLink:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.categoryNavLinkActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.categoryNavLinkActive:hover {
+  color: #ffffff;
+}
+
+/* ── Category Section ── */
+.categorySection {
+  margin-bottom: 3rem;
+  scroll-margin-top: 5rem;
+}
+
+.categoryTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+}
+
+.categoryIntro {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+  line-height: 1.7;
+}
+
+/* ── Accordion ── */
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.accordionItem {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.accordionItem:first-child {
+  border-top: 1px solid var(--border-color);
+}
+
+.accordionTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.125rem 0;
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.accordionTrigger:hover {
+  color: var(--accent);
+}
+
+.accordionChevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  transition: transform 0.25s ease;
+}
+
+.accordionChevronOpen {
+  transform: rotate(180deg);
+}
+
+.accordionContent {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  max-height: 0;
+  opacity: 0;
+}
+
+.accordionContentOpen {
+  opacity: 1;
+}
+
+.accordionBody {
+  padding: 0 0 1.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: var(--text-main);
+}
+
+.accordionBody p {
+  margin: 0 0 1rem;
+}
+
+.accordionBody p:last-child {
+  margin-bottom: 0;
+}
+
+.accordionBody ul,
+.accordionBody ol {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+
+.accordionBody li {
+  margin-bottom: 0.4rem;
+}
+
+.accordionBody a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.accordionBody a:hover {
+  text-decoration: underline;
+}
+
+.accordionBody strong {
+  font-weight: 600;
+}
+
+/* ── Technical Details Toggle ── */
+.technicalToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.4rem 0;
+  margin-top: 0.25rem;
+  transition: opacity 0.2s;
+}
+
+.technicalToggle:hover {
+  opacity: 0.75;
+}
+
+.technicalContent {
+  margin-top: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--accent-soft);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: var(--text-main);
+}
+
+.technicalContent p {
+  margin: 0 0 0.75rem;
+}
+
+.technicalContent p:last-child {
+  margin-bottom: 0;
+}
+
+.technicalLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+/* ── Contact Block ── */
+.contactBlock {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.contactBlock p {
+  margin: 0 0 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.contactBlock a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.contactBlock a:hover {
+  text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .container {
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  .pageTitle {
+    font-size: 1.75rem;
+  }
+
+  .categoryNav {
+    gap: 0.375rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 0.75rem 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .categoryNav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .categoryNavLink {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.85rem;
+  }
+
+  .categoryTitle {
+    font-size: 1.2rem;
+  }
+
+  .accordionTrigger {
+    font-size: 0.875rem;
+    padding: 1rem 0;
+  }
+
+  .accordionBody {
+    font-size: 0.875rem;
+  }
+}

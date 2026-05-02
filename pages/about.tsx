@@ -124,7 +124,7 @@ export default function AboutPage() {
       <section className={styles.section} aria-label="Origin story">
         <div className={`${styles.content} ${styles.normalText}`}>
           <p>
-            Built by a reader who got tired of forgetting. 400+ highlights across 30 books. Never looked at again. That frustration became this app.
+            Built by a reader who got tired of forgetting. 900+ highlights across 33 books. Never looked at again. That frustration became this app.
           </p>
         </div>
       </section>
@@ -134,8 +134,8 @@ export default function AboutPage() {
         <div className={`${styles.content} ${styles.normalText}`}>
           <p>
             2Read is built and maintained by Jishnu — a solo founder, reader, and builder based in Cologne, Germany. If you have thoughts or feedback —{" "}
-            <a href="mailto:jishnu.matra@gmail.com" className={styles.link}>
-              jishnu.matra@gmail.com
+            <a href="mailto:randomoranges.apps@gmail.com" className={styles.link}>
+              randomoranges.apps@gmail.com
             </a>{" "}
             or{" "}
             <a

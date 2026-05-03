@@ -79,7 +79,7 @@ export default function AboutPage() {
         <div className={`${styles.content} ${styles.normalText}`}>
           <p>But you never went back to it.</p>
           <p>
-            We highlight with intention. Then we forget with ease. Hundreds of passages sitting in Kindle, untouched. Brilliant ideas buried in a text file called My Clippings. Insights from sideloaded textbooks and research papers — trapped on a device with no way out.
+            Hundreds of passages sitting in Kindle, untouched. Ideas you loved, forgotten in a list you never open.
           </p>
         </div>
       </section>
@@ -88,7 +88,7 @@ export default function AboutPage() {
       <section className={styles.section} aria-label="Existing tools">
         <div className={`${styles.content} ${styles.normalText} ${styles.minimalSpacing}`}>
           <p>
-            The tools that exist weren't built for you. They were built for power users who export CSVs, install browser extensions, and pipe data into note-taking systems. You just wanted to read and remember.
+            The tools that exist weren't built for you. They were built for people who want spreadsheets, browser extensions, and complicated export pipelines. You just wanted to read and remember.
           </p>
         </div>
       </section>
@@ -97,7 +97,7 @@ export default function AboutPage() {
       <section className={styles.section} aria-label="Reading deserves better">
         <div className={`${styles.content} ${styles.normalText}`}>
           <p>
-            Reading deserves better than that. Your highlights aren't data. They're the moments a book spoke directly to you. They deserve to be seen again — beautifully, effortlessly, on the device already in your hand.
+            To take the highlights you've already made — from every Kindle book, and even from documents you've sideloaded yourself — and make them feel alive again.
           </p>
         </div>
       </section>
@@ -115,7 +115,7 @@ export default function AboutPage() {
       <section className={styles.section} aria-label="Deep understanding">
         <div className={`${styles.content} ${styles.mediumText}`}>
           <p>
-            One swipe at a time. With AI that helps you understand deeply, not just store efficiently.
+            One swipe at a time. With AI that helps you understand what you read — not just store it, but actually think with it.
           </p>
         </div>
       </section>
@@ -155,7 +155,7 @@ export default function AboutPage() {
       <section className={styles.section} aria-label="Call to action">
         <div className={`${styles.content} ${styles.normalText}`}>
           <p>
-            Because the best ideas you've ever read are already highlighted. You just need a reason to go back to them.
+            Your best ideas are already highlighted. They just need a better home.
           </p>
           <div className={styles.ctaWrapper}>
             <Link to="/" className={styles.ctaLink}>

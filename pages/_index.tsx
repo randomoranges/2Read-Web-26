@@ -614,6 +614,7 @@ export default function LandingPage() {
             <div className={styles.footerCol}>
               <Link to="/about" className={styles.footerLink}>About</Link>
               <Link to="/pricing" className={styles.footerLink}>Pricing</Link>
+              <Link to="/faq" className={styles.footerLink}>FAQ</Link>
             </div>
             <div className={styles.footerCol}>
               <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Instagram</a>

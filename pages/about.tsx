@@ -115,7 +115,7 @@ export default function AboutPage() {
       <section className={styles.section} aria-label="Deep understanding">
         <div className={`${styles.content} ${styles.mediumText}`}>
           <p>
-            One swipe at a time. With AI that helps you understand what you read — not just store it, but actually think with it.
+            Your highlights, thinking with you. With AI that helps you understand what you read — not just store it, but actually think with it.
           </p>
         </div>
       </section>

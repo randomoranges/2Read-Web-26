@@ -1,5 +1,11 @@
 {
   "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "tsx server.ts",
+    "preview": "vite preview"
+  },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "@hookform/resolvers": "^4.1.3",

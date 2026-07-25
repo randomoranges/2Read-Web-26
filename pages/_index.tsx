@@ -1,90 +1,41 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import { Sun, Moon, BookOpen, FileUp, BookText, Sparkles, FileText, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { Sun, Moon, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "../components/Button";
 import { useThemeMode } from "../helpers/themeMode";
 import styles from "./_index.module.css";
 
-const showcaseTabs = [
-  {
-    id: "highlights",
-    label: "Highlights",
-    caption: "Open a book. Swipe through the ideas worth keeping.",
-    images: [
-      {
-        imgLight: "/images/highlights-1-light.png",
-        imgDark: "/images/highlights-1-dark.png",
-      },
-      {
-        imgLight: "/images/highlights-2-light.png",
-        imgDark: "/images/highlights-2-dark.png",
-      }
-    ]
-  },
-  {
-    id: "summaries",
-    label: "Summaries",
-    caption: "Generate a summary, or tell the AI exactly what you want.",
-    imgLight: "/images/summaries.png",
-    imgDark: "/images/summaries.png",
-  },
-  {
-    id: "streaks",
-    label: "Streaks",
-    caption: "A small streak. A real reading habit.",
-    imgLight: "/images/streaks-light.png",
-    imgDark: "/images/streaks-dark.png",
-  },
-  {
-    id: "more",
-    label: "And more...",
-    caption: "This is what waits for you in the app.",
-    imgLight: "",
-    imgDark: "",
-    customContent: true,
-  },
-];
-
 export default function LandingPage() {
-  const [syncToggle, setSyncToggle] = useState<"kindle" | "sideloaded">("kindle");
-
   const { resolvedMode, switchToLightMode, switchToDarkMode } = useThemeMode();
 
   const [showPlayStoreQR, setShowPlayStoreQR] = useState(false);
   const [showAppStoreQR, setShowAppStoreQR] = useState(false);
   const [showMoreReviews, setShowMoreReviews] = useState(false);
+  const [activeReaderGroup, setActiveReaderGroup] = useState<null | "A" | "B" | "C" | "overlap">(null);
 
-  const [activeShowcaseTab, setActiveShowcaseTab] = useState(0);
-  const [activeSubTab, setActiveSubTab] = useState(0);
-  const [isShowcaseAutoPaused, setIsShowcaseAutoPaused] = useState(false);
-  const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const readerGroupDescriptions: Record<"A" | "B" | "C" | "overlap", string> = {
+    A: "If you read a lot of these, the AI has plenty to work with: practical ideas it can explain, unpack, and tie back to things you already know. It's at its best here.",
+    B: "If you read a lot of these, the AI is just as strong: dense arguments it can clarify, trace, and set against other thinkers. It's at its best here too.",
+    overlap: "If your library is a mix of these, two of them or all three, this is where 2Read goes furthest. The Wisdom Spark has the most to connect: an idea from one shelf meeting an idea from another you'd never have put together.",
+    C: "If you read mostly novels, there's less for the AI to unpack. Fiction leans on context that a single highlight loses, so an insight can miss. But Smart Dictionary shines here. For older books especially, it nails what a word meant in its time. Newer fiction, less so. That's why it's lighter to unpack but lovely to revisit.",
+  };
 
-  useEffect(() => {
-    if (isShowcaseAutoPaused) return;
-    const timer = setTimeout(() => {
-      const currentTab = showcaseTabs[activeShowcaseTab];
-      if (currentTab.images && activeSubTab < currentTab.images.length - 1) {
-        setActiveSubTab((prev) => prev + 1);
-      } else {
-        setActiveSubTab(0);
-        setActiveShowcaseTab((prev) => (prev + 1) % showcaseTabs.length);
-      }
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, [activeShowcaseTab, activeSubTab, isShowcaseAutoPaused]);
+  const canHover = () =>
+    typeof window !== "undefined" &&
+    window.matchMedia &&
+    window.matchMedia("(hover: hover)").matches;
 
-  const handleShowcaseTabClick = (index: number) => {
-    setActiveShowcaseTab(index);
-    setActiveSubTab(0);
-    setIsShowcaseAutoPaused(true);
-    
-    if (resumeTimeoutRef.current) {
-      clearTimeout(resumeTimeoutRef.current);
-    }
-    resumeTimeoutRef.current = setTimeout(() => {
-      setIsShowcaseAutoPaused(false);
-    }, 8000);
+  const handleGroupEnter = (g: "A" | "B" | "C" | "overlap") => {
+    if (canHover()) setActiveReaderGroup(g);
+  };
+
+  const handleGroupLeave = () => {
+    if (canHover()) setActiveReaderGroup(null);
+  };
+
+  const handleGroupClick = (g: "A" | "B" | "C" | "overlap") => {
+    setActiveReaderGroup((prev) => (prev === g ? null : g));
   };
 
   const toggleTheme = () => {
@@ -102,12 +53,12 @@ export default function LandingPage() {
   return (
     <div className={styles.pageWrapper}>
       <Helmet>
-        <title>2Read | Your Kindle highlights. One swipe at a time.</title>
+        <title>2Read | Your highlights, thinking with you.</title>
         <meta name="description" content="2Read captures your Kindle highlights and turns them into beautiful, swipeable cards you'll actually revisit." />
         <meta name="keywords" content="kindle highlights, reading app, book highlights, AI reading assistant, 2Read, highlight management, sideloaded books" />
         <meta name="robots" content="index, follow" />
         <meta name="author" content="2Read" />
-        <meta property="og:title" content="2Read | Your Kindle highlights. One swipe at a time." />
+        <meta property="og:title" content="2Read | Your highlights, thinking with you." />
         <meta property="og:description" content="2Read captures your Kindle highlights and turns them into beautiful, swipeable cards you'll actually revisit." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://2read.app" />
@@ -115,7 +66,7 @@ export default function LandingPage() {
         <meta property="og:locale" content="en_US" />
         <meta property="og:image" content="https://2read.app/images/hero-light.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="2Read | Your Kindle highlights. One swipe at a time." />
+        <meta name="twitter:title" content="2Read | Your highlights, thinking with you." />
         <meta name="twitter:description" content="2Read captures your Kindle highlights and turns them into beautiful, swipeable cards you'll actually revisit." />
         <meta name="twitter:image" content="https://2read.app/images/hero-light.png" />
         <link rel="canonical" href="https://2read.app" />
@@ -230,103 +181,94 @@ export default function LandingPage() {
         {/* HERO SECTION */}
         <section className={styles.heroSection} aria-label="Hero">
           <div className={styles.container}>
-            <h1 className={styles.heroTitle}>
-              Your Kindle highlights. <span className={styles.accentItalic}>One swipe</span> at a time.
-            </h1>
-            <p className={styles.heroSubtitle}>
-              2Read brings your Kindle highlights back, one card at a time — including sideloaded books. AI thinks alongside each one.
-            </p>
-            <div className={styles.heroAction}>
-              <Button className={styles.downloadBtn} size="lg" onClick={scrollToCTA}>
-                Download for Free
-              </Button>
-            </div>
+            <div className={styles.heroGrid}>
+              <div className={styles.heroCopy}>
+                <h1 className={styles.heroTitle}>
+                  Your highlights, <span className={styles.accentItalic}>thinking with you.</span>
+                </h1>
+                <p className={styles.heroSubtitle}>
+                  Works with every Kindle book — including the sideloaded PDFs, ePubs, and DOCX files no other reading tool can reach.
+                </p>
+                <div className={styles.heroAction}>
+                  <Button className={styles.downloadBtn} size="lg" onClick={scrollToCTA}>
+                    Download for Free
+                  </Button>
+                </div>
+              </div>
 
-            <div className={styles.phoneMockupContainer}>
-              <img 
-                src={resolvedMode === "dark" 
-                  ? "/images/hero-dark.png"
-                  : "/images/hero-light.png"} 
-                alt="2Read app showing Kindle highlights organized as swipeable cards" 
-                className={styles.heroMockupImage} 
-              />
+              <div className={styles.heroPhoneCol}>
+                <div className={styles.phoneMockupContainer}>
+                  <img
+                    src={resolvedMode === "dark"
+                      ? "/images/hero-dark.png"
+                      : "/images/hero-light.png"}
+                    alt="2Read app showing Kindle highlights organized as swipeable cards"
+                    className={styles.heroMockupImage}
+                  />
+                </div>
+                <p className={styles.heroPhoneCaption}>
+                  This is what a highlight looks like in 2Read.
+                </p>
+              </div>
             </div>
-
-            <div className={styles.phEmbeds}>
-              <a href="https://www.producthunt.com/products/2read-3/launches/2read-4?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_campaign=badge-2read-4" target="_blank" rel="noopener noreferrer">
-                <img alt="2Read - AI Kindle Reading Buddy | Product Hunt Top Post Badge" width="250" height="54" src={`https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=695205&theme=${resolvedMode === 'dark' ? 'dark' : 'light'}&period=daily&t=1774880084972`} />
-              </a>
-              <a href="https://www.producthunt.com/products/2read-3/launches/2read-4?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_campaign=badge-2read-4" target="_blank" rel="noopener noreferrer">
-                <img alt="2Read - AI Kindle Reading Buddy | Product Hunt Weekly Topic Badge" width="250" height="54" src={`https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=695205&theme=${resolvedMode === 'dark' ? 'dark' : 'light'}&period=weekly&topic_id=46&t=1774880084972`} />
-              </a>
-            </div>
-            
-            <p className={styles.bottomNote}>
-              Available on Android & iOS · Free to start · Works without a Kindle device
-            </p>
           </div>
         </section>
 
-        {/* TWO WAYS IN SECTION */}
-        <section className={styles.section} aria-label="Features">
-          <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>Two ways in. Both effortless.</h2>
-            
-            <div className={styles.toggleContainer}>
-              <div className={styles.toggleSwitch}>
-                <button
-                  className={`${styles.toggleBtn} ${syncToggle === "kindle" ? styles.toggleBtnActive : ""}`}
-                  onClick={() => setSyncToggle("kindle")}
-                >
-                  <BookOpen size={18} className={styles.toggleIcon} />
-                  Kindle Books
-                </button>
-                <button
-                  className={`${styles.toggleBtn} ${syncToggle === "sideloaded" ? styles.toggleBtnActive : ""}`}
-                  onClick={() => setSyncToggle("sideloaded")}
-                >
-                  <FileUp size={18} className={styles.toggleIcon} />
-                  Sideloaded Docs
-                </button>
-              </div>
+        {/* SECTION I — THE PROMISE */}
+        <section className={styles.editorialSection} aria-label="The promise">
+          <div className={styles.editorialWrap}>
+            <div className={styles.editorialMarker}>I</div>
+            <h2 className={styles.editorialTitle}>
+              You underlined the best parts of every book.<br />
+              <span className={styles.accentItalic}>Then you closed it, and that was that.</span>
+            </h2>
+            <div className={styles.editorialTurn}>
+              <p className={styles.editorialBody}>
+                The highlights are still there. You're just never going to open that notebook again. It was never a storage problem — Kindle already keeps them. It's that a list of old highlights gives you no reason to return. So you don't, and slowly everything you read becomes something you used to know.
+              </p>
+              <p className={styles.editorialBodyMuted}>
+                2Read is the thing in between. It takes what you underline and turns it into something that stays with you — read, revisited, and understood, a few minutes at a time.
+              </p>
             </div>
 
-            <div className={styles.twoColLayout}>
-              <div className={styles.videoPlaceholderLarge}>
-                <span className={styles.placeholderText}>Video placeholder</span>
+            <div className={styles.bridgeDiagram}>
+              <svg viewBox="0 0 640 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="bridgeFan" x1="246" y1="150" x2="580" y2="150" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="var(--text-main)" stopOpacity="0" />
+                    <stop offset="1" stopColor="var(--text-main)" stopOpacity="0.14" />
+                  </linearGradient>
+                  <marker id="bridgeArrow" markerWidth="11" markerHeight="11" refX="6" refY="5.5" orient="auto">
+                    <path d="M0,0 L9,5.5 L0,11 z" style={{ fill: "var(--text-main)" }} />
+                  </marker>
+                </defs>
+                <path d="M246 150 L560 52 Q592 150 560 248 Z" fill="url(#bridgeFan)" />
+                <line x1="60" y1="92" x2="590" y2="257" style={{ stroke: "var(--text-main)" }} strokeWidth="1.4" markerEnd="url(#bridgeArrow)" />
+                <line x1="60" y1="208" x2="590" y2="43" style={{ stroke: "var(--text-main)" }} strokeWidth="1.4" markerEnd="url(#bridgeArrow)" />
+                <text x="74" y="83" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" transform="rotate(17 74 83)">YOUR HIGHLIGHTS</text>
+                <text x="74" y="225" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" transform="rotate(-17 74 225)">A BEAUTIFUL SYSTEM</text>
+                <text x="430" y="156" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" fontWeight="500">IDEAS THAT STAY</text>
+              </svg>
+            </div>
+
+            <div className={styles.sideloadBlock}>
+              <p className={styles.sideloadLead}>
+                And not just the books you bought. <b>The ones you sideloaded too</b> — the part no other tool can reach.
+              </p>
+              <div className={styles.sideloadSteps}>
+                <span className={styles.sideloadStep}>Open the Kindle app</span>
+                <span className={styles.sideloadArrow}>→</span>
+                <span className={styles.sideloadStep}>the book's <b>···</b> menu</span>
+                <span className={styles.sideloadArrow}>→</span>
+                <span className={styles.sideloadStep}>Annotations</span>
+                <span className={styles.sideloadArrow}>→</span>
+                <span className={styles.sideloadStep}>Share</span>
+                <span className={styles.sideloadArrow}>→</span>
+                <span className={`${styles.sideloadStep} ${styles.sideloadStepAccent}`}>2Read</span>
               </div>
-              <div className={styles.textCol}>
-                {syncToggle === "kindle" ? (
-                  <>
-                    <h3 className={styles.subHeading}>One sync. All your highlights.</h3>
-                    <p className={styles.paragraph}>
-                    No exports. No manual copying. Sign in once and every highlight from every book is yours, organised and ready to revisit.
-                    </p>
-                    <button
-                      className={styles.inlineSwitchLink}
-                      onClick={() => setSyncToggle("sideloaded")}
-                    >
-                      Got highlights from sideloaded docs, PDFs, ePubs? See how easy it is to import them →
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <h3 className={styles.subHeading}>4 taps. That's it.</h3>
-                    <p className={styles.paragraph}>
-                      Open the Kindle app → tap the three dots on your sideloaded book → tap Annotations → tap Share → select 2Read. Your highlights are instantly in the app. This works with any book, PDF, or document you've sideloaded to your Kindle app.
-                    </p>
-                    <p className={styles.paragraph}>
-                      No cables. No browser extension. No laptop. No export files. Just your phone and 10 seconds.
-                    </p>
-                    <div className={styles.calloutBox}>
-                      <span className={styles.calloutIcon}>💡</span>
-                      <p className={styles.calloutText}>
-                        <strong>This is the feature other highlight tools can't do.</strong>
-                      </p>
-                    </div>
-                  </>
-                )}
-              </div>
+              <p className={styles.sideloadFoot}>
+                Any PDF, ePub, or document you've sent to Kindle. No cables, no browser extension, no laptop, no export files — just your phone and ten seconds. And no Kindle device required; the free Kindle app is enough.
+              </p>
             </div>
 
             <div className={styles.kindleSetupCallout}>
@@ -338,117 +280,190 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* COME BACK EVERY DAY SECTION */}
-        <section className={styles.section} aria-label="Showcase">
-          <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>Your highlights aren't a spreadsheet export. They're ideas worth revisiting</h2>
-            <p className={styles.sectionSubtitle}>
+        {/* SECTION II — THE THINKING PARTNER */}
+        <section className={styles.editorialSection} aria-label="Thinking partner">
+          <div className={styles.editorialWrap}>
+            <div className={styles.editorialMarker}>II</div>
+            <h2 className={styles.editorialTitle}>Less a library. More a thinking partner.</h2>
+            <p className={styles.ladderIntro}>
+              A companion doesn't just hold your reading — it thinks alongside it, at whatever scale you're reading. Meaning builds in four steps, and there's something waiting at each one.
             </p>
 
-            <div className={styles.showcaseContainer}>
-              <div className={styles.showcasePhone}>
-                {showcaseTabs.map((tab, idx) => {
-                  if (tab.customContent) {
-                    return (
-                      <div
-                        key={tab.id}
-                        className={`${styles.showcaseCustomContent} ${activeShowcaseTab === idx ? styles.activeScreenshot : ""}`}
-                      >
-                        <img 
-                          src="/images/logo.png"
-                          alt="2Read app icon" 
-                          className={styles.showcaseAppIcon}
-                        />
-                        <span className={styles.showcaseMoreText}>and more...</span>
-                      </div>
-                    );
-                  }
-
-                  if (tab.images) {
-                    return tab.images.map((imgPair, subIdx) => (
-                      <img
-                        key={`${tab.id}-${subIdx}`}
-                        src={resolvedMode === "dark" ? imgPair.imgDark : imgPair.imgLight}
-                        alt={`${tab.label} ${subIdx + 1}`}
-                        className={`${styles.showcaseScreenshot} ${activeShowcaseTab === idx && activeSubTab === subIdx ? styles.activeScreenshot : ""}`}
-                      />
-                    ));
-                  }
-
-                  return (
-                    <img
-                      key={tab.id}
-                      src={resolvedMode === "dark" ? tab.imgDark : tab.imgLight}
-                      alt={tab.label}
-                      className={`${styles.showcaseScreenshot} ${activeShowcaseTab === idx ? styles.activeScreenshot : ""}`}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className={styles.showcaseControls}>
-                <div className={styles.toggleSwitch}>
-                  {showcaseTabs.slice(0, 3).map((tab, idx) => (
-                    <button
-                      key={tab.id}
-                      className={`${styles.toggleBtn} ${activeShowcaseTab === idx ? styles.toggleBtnActive : ""}`}
-                      onClick={() => handleShowcaseTabClick(idx)}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
+            {[
+              {
+                scale: "Word",
+                name: "Smart Dictionary",
+                q: "What does this actually mean, here?",
+                a: <>Select a word or a phrase and get its meaning <b>in this passage</b> — the sense the author intended, not the flat dictionary default. It works even on the terms authors coin, the ones no dictionary lists.</>,
+              },
+              {
+                scale: "Passage",
+                name: "Insight",
+                q: "Help me actually take this in.",
+                a: <><b>Unpacks the highlight</b> — puts it in simpler terms when it needs them, adds a little context, gives you an example. The dense sentence you underlined and half-understood becomes one you hold onto.</>,
+              },
+              {
+                scale: "Book",
+                name: "Synthesis",
+                q: "What was this whole book, to me?",
+                a: <><b>Draws the book together through your own highlights</b> — not a generic summary, but a synthesis of the parts you chose to keep. And you can tell it what to focus on.</>,
+              },
+              {
+                scale: "Library",
+                name: "Wisdom Spark",
+                q: "What does this connect to, across everything I've read?",
+                a: <><b>Reaches across your entire library</b> for a connection you'd never have drawn yourself — one highlight, linked to a thinker, a discipline, or a book you read years ago.</>,
+              },
+            ].map((r) => (
+              <div key={r.scale} className={styles.ladderRung}>
+                <div className={styles.ladderScale}>
+                  <span className={styles.ladderScaleLabel}>{r.scale}</span>
+                  {r.name}
                 </div>
-                <p className={styles.showcaseCaption}>
-                  {showcaseTabs[activeShowcaseTab].caption}
-                </p>
+                <div>
+                  <p className={styles.ladderQ}>{r.q}</p>
+                  <p className={styles.ladderA}>{r.a}</p>
+                </div>
               </div>
-            </div>
+            ))}
+
+            <p className={styles.ladderClose}>
+              Word, passage, book, library. <span className={styles.accentItalic}>That's not a feature list — it's the shape of how thinking with someone actually works.</span>
+            </p>
           </div>
         </section>
 
-        {/* PERSONAL READING TUTOR SECTION */}
-        <section className={styles.section} aria-label="AI Features">
-          <div className={styles.container}>
-            <h2 className={styles.sectionTitle}>The book is closed. The ideas aren't.</h2>
-            <p className={styles.sectionSubtitle}>
-              Tap, ask, summarise, return. The AI makes each highlight live a little longer.
+        {/* SECTION III — WHO THE PARTNER SERVES */}
+        <section className={styles.editorialSection} aria-label="Who the partner serves">
+          <div className={styles.editorialWide}>
+            <div className={styles.editorialMarker}>III</div>
+            <h2 className={styles.editorialTitle}>It's a companion for every reader. A thinking partner for some.</h2>
+            <p className={styles.readersIntro}>
+              The daily review, the ritual, the keeping — that works for anyone who underlines. But the AI, the part that explains and connects, has the most to do where the reading is dense. Which is to say: non-fiction.
             </p>
 
-            <div className={styles.tutorGrid}>
-              <div className={styles.tutorCard}>
-                <div className={styles.iconContainer} style={{ backgroundColor: '#fce8e4', color: '#d4735a', borderColor: '#f8d9d3' }}>
-                  <BookText size={22} />
-                </div>
-                <h4 className={styles.tutorCardTitle}>Smart Dictionary — Tap a word.</h4>
-                <p className={styles.tutorCardDesc}>
-  Get its meaning <em>in this passage</em>, not the dictionary's default.
-</p>
-              </div>
+            <div className={styles.diagramLabel}>Where the thinking partner (AI) does its best work</div>
+            <div className={styles.readerDiagram}>
+              <svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="readerA" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#D9836A" stopOpacity="0.34" />
+                    <stop offset="70%" stopColor="#D9836A" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#D9836A" stopOpacity="0" />
+                  </radialGradient>
+                  <radialGradient id="readerB" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#89A197" stopOpacity="0.32" />
+                    <stop offset="70%" stopColor="#89A197" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#89A197" stopOpacity="0" />
+                  </radialGradient>
+                  <radialGradient id="readerC" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#B5A088" stopOpacity="0.28" />
+                    <stop offset="70%" stopColor="#B5A088" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#B5A088" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
 
-              <div className={styles.tutorCard}>
-                <div className={styles.iconContainer} style={{ backgroundColor: '#e4eaf8', color: '#5b7ec2', borderColor: '#d3dcf2' }}>
-                  <Sparkles size={22} />
-                </div>
-                <h4 className={styles.tutorCardTitle}>AI Insight</h4>
-                <p className={styles.tutorCardDesc}>One tap. The AI reads the highlight and gives you what it needs — context, a simpler take, or a deeper unpack.</p>
-              </div>
+                <g
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={() => handleGroupEnter("A")}
+                  onMouseLeave={handleGroupLeave}
+                  onClick={() => handleGroupClick("A")}
+                >
+                  <circle cx="340" cy="220" r="185" fill="url(#readerA)" />
+                  <circle cx="340" cy="220" r="150" fill="none" stroke="#D9836A" strokeOpacity="0.35" strokeWidth="1" />
+                </g>
 
-              <div className={styles.tutorCard}>
-                <div className={styles.iconContainer} style={{ backgroundColor: '#dff3ed', color: '#4aad8b', borderColor: '#c8e8df' }}>
-                  <FileText size={22} />
-                </div>
-                <h4 className={styles.tutorCardTitle}>AI Summary</h4>
-                <p className={styles.tutorCardDesc}>Summarise the book through your own highlights — or tell the AI exactly what to focus on.</p>
-              </div>
+                <g
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={() => handleGroupEnter("B")}
+                  onMouseLeave={handleGroupLeave}
+                  onClick={() => handleGroupClick("B")}
+                >
+                  <circle cx="560" cy="220" r="185" fill="url(#readerB)" />
+                  <circle cx="560" cy="220" r="150" fill="none" stroke="#89A197" strokeOpacity="0.40" strokeWidth="1" />
+                </g>
 
-              <div className={styles.tutorCard}>
-                <div className={styles.iconContainer} style={{ backgroundColor: '#ede4f5', color: '#8b6aaf', borderColor: '#e1d2ef' }}>
-                  <Star size={22} />
+                <g
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={() => handleGroupEnter("C")}
+                  onMouseLeave={handleGroupLeave}
+                  onClick={() => handleGroupClick("C")}
+                >
+                  <circle cx="450" cy="430" r="120" fill="url(#readerC)" />
+                  <circle cx="450" cy="430" r="95" fill="none" stroke="#B5A088" strokeOpacity="0.45" strokeWidth="1" />
+                </g>
+
+                <g style={{ pointerEvents: "none" }}>
+                  {/* Reader A labels — left-aligned block, visually centered in circle A */}
+                  <text x="300" y="152" style={{ fill: "var(--text-muted)" }} fontFamily="'Inter', sans-serif" fontSize="11.5" letterSpacing="0.16em">READER A</text>
+                  <text x="300" y="184" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Self-help</text>
+                  <text x="300" y="209" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Business</text>
+                  <text x="300" y="234" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Psychology</text>
+                  <text x="300" y="259" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Health</text>
+
+                  {/* Reader B labels — left-aligned block, visually centered in circle B */}
+                  <text x="520" y="140" style={{ fill: "var(--text-muted)" }} fontFamily="'Inter', sans-serif" fontSize="11.5" letterSpacing="0.16em">READER B</text>
+                  <text x="520" y="172" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Philosophy</text>
+                  <text x="520" y="197" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">History</text>
+                  <text x="520" y="222" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Economics</text>
+                  <text x="520" y="247" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Literature</text>
+                  <text x="520" y="272" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Academic</text>
+
+                  {/* Overlap inner label */}
+                  <text x="450" y="216" textAnchor="middle" style={{ fill: "var(--text-muted)" }} fontFamily="'Newsreader', serif" fontStyle="italic" fontSize="15">sweet</text>
+                  <text x="450" y="236" textAnchor="middle" style={{ fill: "var(--text-muted)" }} fontFamily="'Newsreader', serif" fontStyle="italic" fontSize="15">spot</text>
+
+                  {/* Reader C labels */}
+                  <text x="450" y="400" textAnchor="middle" style={{ fill: "var(--text-muted)" }} fontFamily="'Inter', sans-serif" fontSize="11.5" letterSpacing="0.16em">READER C</text>
+                  <text x="450" y="432" textAnchor="middle" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Novels · Fiction</text>
+                  <text x="450" y="458" textAnchor="middle" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Memoir · Essays</text>
+
+                  {/* Left "works beautifully" — freer arc, aligned arrowhead */}
+                  <path d="M280 465 Q220 400 245 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M245 335 l-9 9 M245 335 l1 13" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <text x="25" y="490" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="32" fontWeight="500">works beautifully</text>
+
+                  {/* Right "works beautifully" — freer arc, aligned arrowhead */}
+                  <path d="M620 465 Q680 400 655 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M655 335 l-1 13 M655 335 l9 9" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <text x="875" y="490" textAnchor="end" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="32" fontWeight="500">works beautifully</text>
+
+                  {/* Top "the richest reading" — NAVY */}
+                  <path d="M450 78 Q450 128 450 180" fill="none" style={{ stroke: "#28374F" }} strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M450 180 l-8 -11 M450 180 l8 -11" fill="none" style={{ stroke: "#28374F" }} strokeWidth="1.8" strokeLinecap="round" />
+                  <text x="450" y="58" textAnchor="middle" style={{ fill: "#28374F" }} fontFamily="'Caveat', cursive" fontSize="34" fontWeight="600">the richest reading</text>
+
+                  {/* Right side C annotation — arrowhead aligned to tangent */}
+                  <path d="M710 465 Q640 460 555 448" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
+                  <path d="M555 448 l12 -4 M555 448 l11 7" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
+                  <text x="720" y="460" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="26" fontWeight="500">lovely to revisit —</text>
+                  <text x="720" y="488" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="26" fontWeight="500">less to unpack.</text>
+                </g>
+
+                {/* Invisible overlap interaction zone — drawn last so it captures events over A/B */}
+                <ellipse
+                  cx="450"
+                  cy="220"
+                  rx="42"
+                  ry="95"
+                  fill="transparent"
+                  style={{ cursor: "pointer" }}
+                  onMouseEnter={() => handleGroupEnter("overlap")}
+                  onMouseLeave={handleGroupLeave}
+                  onClick={() => handleGroupClick("overlap")}
+                />
+              </svg>
+
+              {activeReaderGroup && (
+                <div className={styles.readerTooltip} role="status" aria-live="polite">
+                  {readerGroupDescriptions[activeReaderGroup]}
                 </div>
-                <h4 className={styles.tutorCardTitle}>Daily Wisdom Spark</h4>
-                <p className={styles.tutorCardDesc}>15 highlights a day, plus one moment of connection across your library.</p>
-              </div>
+              )}
             </div>
+
+            <p className={styles.readersResolve}>
+              Best for non-fiction. Sharpest across two shelves at once. <span className={styles.accentItalic}>A good companion no matter what you read.</span>
+            </p>
           </div>
         </section>
 

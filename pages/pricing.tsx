@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
-import { Sun, Moon, Check } from "lucide-react";
+import { Sun, Moon, Check, Sparkle } from "lucide-react";
 import { Button } from "../components/Button";
 import { useThemeMode } from "../helpers/themeMode";
 import styles from "./pricing.module.css";
 
 export default function PricingPage() {
   const { resolvedMode, switchToLightMode, switchToDarkMode } = useThemeMode();
-  const [isYearly, setIsYearly] = useState(true);
   const [isIndia, setIsIndia] = useState(false);
+  const [isYearly, setIsYearly] = useState(true);
+
+  const monthlyPrice = isIndia ? "₹399" : "$4.99";
+  const yearlyPrice = isIndia ? "₹3,999" : "$49.99";
 
   useEffect(() => {
     try {
@@ -145,208 +148,141 @@ export default function PricingPage() {
         <section className={styles.pricingSection} aria-label="Pricing Plans">
           <div className={styles.container}>
             <div className={styles.headerArea}>
-              <h1 className={styles.pageTitle}>Upgrade your reading</h1>
+              <h1 className={styles.pageTitle}>Become a Scholar</h1>
               <p className={styles.pageSubtitle}>Start free, upgrade when you're ready.</p>
             </div>
 
             <div className={styles.cardsContainer}>
               {/* CURIOUS PLAN (FREE) */}
-              <div className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <h2 className={styles.planName}>Curious</h2>
-                  <div className={styles.priceContainer}>
-                    <span className={styles.planPrice}>Free <span className={styles.priceSuffix}>· forever</span></span>
-                  </div>
+              <div className={`${styles.card} ${styles.cardCurious}`}>
+                <h2 className={styles.planName}>Curious</h2>
+                <div className={styles.priceRow}>
+                  <span className={styles.planPrice}>Free</span>
+                  <span className={styles.priceSuffix}>· forever</span>
                 </div>
 
-                <div className={styles.cardBody}>
-                  <p className={styles.listLabel}>Included:</p>
-                  <ul className={styles.featureList}>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Kindle Sync (3 books)</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Sideloaded Import (3 books)</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>My Books library</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Daily Review</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Book Shots</span>
-                    </li>
-                  </ul>
-
-                  <p className={styles.listLabel}>Try AI features:</p>
-                  <ul className={styles.featureList}>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Smart Dictionary (limited)</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>AI Insight (limited)</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>AI Summary (limited)</span>
-                    </li>
-                  </ul>
-                </div>
+                <ul className={styles.flatFeatureList}>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>3 books from Kindle or sideloaded</span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Daily Review</span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Recall Notes</span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Your ledger, with Wall of Books</span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Bookshots</span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Smart Dictionary <span className={styles.mutedInline}>(starter credits)</span></span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Unpack <span className={styles.mutedInline}>(starter credits)</span></span>
+                  </li>
+                  <li className={styles.flatItem}>
+                    <Check size={18} className={styles.checkIcon} strokeWidth={2} />
+                    <span>Synthesis <span className={styles.mutedInline}>(starter credits)</span></span>
+                  </li>
+                </ul>
               </div>
 
-              {/* SCHOLAR PLAN (PAID) */}
-              <div className={`${styles.card} ${styles.cardFeatured}`}>
-                <div className={styles.badgeWrapper}>
-                  <span className={styles.badge}>
-                    {isIndia ? "Save 35% Annually" : "Save 17% Annually"}
-                  </span>
-                </div>
-                
-                <div className={styles.cardHeader}>
+              {/* SCHOLAR — merged with monthly/yearly toggle */}
+              <div className={`${styles.card} ${styles.cardScholar}`}>
+                <div className={styles.cardTopRow}>
                   <h2 className={styles.planName}>Scholar</h2>
-                  
-                  <div className={styles.toggleContainer}>
-                    <div className={styles.toggleSwitch}>
-                      <button
-                        className={`${styles.toggleBtn} ${!isYearly ? styles.toggleBtnActive : ""}`}
-                        onClick={() => setIsYearly(false)}
-                      >
-                        Monthly
-                      </button>
-                      <button
-                        className={`${styles.toggleBtn} ${isYearly ? styles.toggleBtnActive : ""}`}
-                        onClick={() => setIsYearly(true)}
-                      >
-                        Yearly
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className={styles.priceContainer}>
-                    <span className={styles.planPrice}>
-                      {isYearly 
-                        ? (isIndia ? "₹1,199" : "$39.99") 
-                        : (isIndia ? "₹149" : "$3.99")}
-                    </span>
-                    <span className={styles.billingText}>
-                      {isYearly ? "Billed yearly · 7-day trial" : "Billed monthly · 7-day trial"}
-                    </span>
+                  <div className={styles.billingToggle}>
+                    <button
+                      className={`${styles.billingToggleBtn} ${!isYearly ? styles.billingToggleBtnActive : ""}`}
+                      onClick={() => setIsYearly(false)}
+                    >
+                      Monthly
+                    </button>
+                    <button
+                      className={`${styles.billingToggleBtn} ${isYearly ? styles.billingToggleBtnActive : ""}`}
+                      onClick={() => setIsYearly(true)}
+                    >
+                      Yearly
+                      <span className={styles.savingsInlineBadge}>17% off</span>
+                    </button>
                   </div>
                 </div>
 
-                <div className={styles.cardBody}>
-                  <p className={styles.listLabel}>Everything in Curious, plus:</p>
-                  <ul className={styles.featureList}>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Unlimited books</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Sideloaded Import (unlimited)</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Unlimited Smart Dictionary</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Unlimited AI Insight</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>AI Summary (12/month)</span>
-                    </li>
-                    <li className={styles.featureItem}>
-                      <Check size={18} className={styles.checkIcon} />
-                      <span>Export (PDF, MD, TXT)</span>
-                    </li>
-                  </ul>
+                <div className={styles.priceRow}>
+                  <span className={styles.planPrice}>{isYearly ? yearlyPrice : monthlyPrice}</span>
+                </div>
+                <p className={styles.billingText}>
+                  {isYearly ? "Billed yearly · 7-day trial" : "Billed monthly · 7-day trial"}
+                </p>
 
-                  <p className={styles.subText}>
-                    Includes a 7-day free trial
+                <p className={styles.plusLabel}>Everything from Curious, plus:</p>
+
+                <div className={styles.wisdomBlock}>
+                  <div className={styles.wisdomHeader}>
+                    <Sparkle size={18} className={styles.sparkleIcon} strokeWidth={2} />
+                    <span className={styles.wisdomTitle}>Wisdom Spark returns</span>
+                  </div>
+                  <p className={styles.wisdomDesc}>
+                    A small essay after each Daily Review, drawn from your library.
                   </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
-        {/* DOWNLOAD SECTION */}
-        <section id="download" className={styles.downloadSection} aria-label="Download App">
-          <div className={styles.container}>
-            <div className={styles.downloadContent}>
-              <h2 className={styles.downloadTitle}>Get 2Read</h2>
-              
-              <div className={styles.storeButtonsRow}>
-                <a href="https://play.google.com" target="_blank" rel="noopener noreferrer" className={styles.storeBadgeLink}>
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className={styles.storeBadgeImg} />
-                </a>
-                
-                <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer" className={styles.storeBadgeLink}>
-                  <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" className={styles.storeBadgeImg} />
-                </a>
-              </div>
+                <div className={styles.featureSection}>
+                  <h3 className={styles.sectionTitle}>Your Full Library</h3>
+                  <ul className={styles.groupedList}>
+                    <li className={styles.groupedItem}>
+                      <Check size={16} className={styles.checkIconMuted} strokeWidth={2} />
+                      <span>Unlimited books from Kindle</span>
+                    </li>
+                    <li className={styles.groupedItem}>
+                      <Check size={16} className={styles.checkIconMuted} strokeWidth={2} />
+                      <span>Unlimited sideloaded imports</span>
+                    </li>
+                  </ul>
+                </div>
 
-              <p className={styles.bottomNote}>
-                Works with the free Kindle app · No Kindle device required
-              </p>
+                <div className={styles.featureSection}>
+                  <h3 className={styles.sectionTitle}>Your Thinking Partner</h3>
+                  <ul className={styles.groupedList}>
+                    <li className={styles.groupedItem}>
+                      <Check size={16} className={styles.checkIconMuted} strokeWidth={2} />
+                      <span>Unlimited Smart Dictionary</span>
+                    </li>
+                    <li className={styles.groupedItem}>
+                      <Check size={16} className={styles.checkIconMuted} strokeWidth={2} />
+                      <span>50 Unpack calls each month</span>
+                    </li>
+                    <li className={styles.groupedItem}>
+                      <Check size={16} className={styles.checkIconMuted} strokeWidth={2} />
+                      <span>5 Synthesis reports each month</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className={styles.featureSection}>
+                  <h3 className={styles.sectionTitle}>Take It With You</h3>
+                  <ul className={styles.groupedList}>
+                    <li className={styles.groupedItem}>
+                      <Check size={16} className={styles.checkIconMuted} strokeWidth={2} />
+                      <span>Export as PDF, Markdown, or plain text</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </main>
-
-      {/* FOOTER (Replicated from Landing Page) */}
-      <footer className={styles.footer}>
-        <div className={styles.container}>
-          <div className={styles.footerLogo}>
-            <img 
-              src="/images/logo.png" 
-              alt="2Read app logo" 
-              className={styles.logoImage} 
-            />
-            <span className={styles.logoText}>2Read.</span>
-          </div>
-
-          <div className={styles.footerGrid}>
-            <div className={styles.footerCol}>
-              <Link to="/about" className={styles.footerLink}>Why</Link>
-              <Link to="/pricing" className={styles.footerLink}>Pricing</Link>
-            </div>
-            <div className={styles.footerCol}>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Instagram</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>YouTube</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>X</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>TikTok</a>
-            </div>
-            <div className={styles.footerCol}>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Medium</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Substack</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Producthunt</a>
-            </div>
-            <div className={styles.footerCol}>
-              <Link to="/privacy" className={styles.footerLink}>Privacy</Link>
-              <Link to="/terms" className={styles.footerLink}>Terms</Link>
-            </div>
-          </div>
-
-          <div className={styles.footerBottom}>
-            <p>© 2026 2Read. Built for readers who mean it.</p>
-            <div className={styles.creatorInfo}>
-              <img src="/images/creator-avatar.png" alt="Creator Jishnu's avatar" className={styles.creatorLogo} />
-              <p>Created by <a href="#" className={styles.creatorLink}>1truejishnu</a></p>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

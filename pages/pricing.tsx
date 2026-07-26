@@ -318,7 +318,7 @@ export default function PricingPage() {
 
           <div className={styles.footerGrid}>
             <div className={styles.footerCol}>
-              <Link to="/about" className={styles.footerLink}>About</Link>
+              <Link to="/about" className={styles.footerLink}>Why</Link>
               <Link to="/pricing" className={styles.footerLink}>Pricing</Link>
             </div>
             <div className={styles.footerCol}>

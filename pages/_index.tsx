@@ -181,21 +181,22 @@ export default function LandingPage() {
         {/* HERO SECTION */}
         <section className={styles.heroSection} aria-label="Hero">
           <div className={styles.container}>
-            <div className={styles.heroGrid}>
-              <div className={styles.heroCopy}>
-                <h1 className={styles.heroTitle}>
-                  Your highlights, <span className={styles.accentItalic}>thinking with you.</span>
-                </h1>
-                <p className={styles.heroSubtitle}>
-                  Works with every Kindle book — including the sideloaded PDFs, ePubs, and DOCX files no other reading tool can reach.
-                </p>
-                <div className={styles.heroAction}>
-                  <Button className={styles.downloadBtn} size="lg" onClick={scrollToCTA}>
-                    Download for Free
-                  </Button>
-                </div>
+            <div className={styles.heroCopy}>
+              <h1 className={styles.heroTitle}>
+                Your highlights, <span className={styles.accentItalic}>thinking with you.</span>
+              </h1>
+              <p className={styles.heroSubtitle}>
+                Works with every highlight on your Kindle, sideloaded books included. Not a place to store them — a place to sit with them, understand them, and make them yours.
+              </p>
+              <div className={styles.heroAction}>
+                <Button className={styles.downloadBtn} size="lg" onClick={scrollToCTA}>
+                  Download for Free
+                </Button>
               </div>
+            </div>
 
+            {/*
+              Phone mockup — kept for later. Uncomment and restore .heroGrid wrapper to bring it back.
               <div className={styles.heroPhoneCol}>
                 <div className={styles.phoneMockupContainer}>
                   <img
@@ -206,11 +207,8 @@ export default function LandingPage() {
                     className={styles.heroMockupImage}
                   />
                 </div>
-                <p className={styles.heroPhoneCaption}>
-                  This is what a highlight looks like in 2Read.
-                </p>
               </div>
-            </div>
+            */}
           </div>
         </section>
 
@@ -231,6 +229,7 @@ export default function LandingPage() {
               </p>
             </div>
 
+            <div className={styles.diagramLabel}>How it works</div>
             <div className={styles.bridgeDiagram}>
               <svg viewBox="0 0 640 300" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -418,26 +417,26 @@ export default function LandingPage() {
                   <text x="450" y="432" textAnchor="middle" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Novels · Fiction</text>
                   <text x="450" y="458" textAnchor="middle" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Memoir · Essays</text>
 
-                  {/* Left "works beautifully" — freer arc, aligned arrowhead */}
-                  <path d="M280 465 Q220 400 245 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <path d="M245 335 l-9 9 M245 335 l1 13" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <text x="25" y="490" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="32" fontWeight="500">works beautifully</text>
+                  {/* Left "works beautifully" — parked in the outer empty space, well above C */}
+                  <path d="M195 380 Q220 360 245 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M245 335 l-13 -1 M245 335 l-4 12" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <text x="20" y="395" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="28" fontWeight="500">works beautifully</text>
 
-                  {/* Right "works beautifully" — freer arc, aligned arrowhead */}
-                  <path d="M620 465 Q680 400 655 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <path d="M655 335 l-1 13 M655 335 l9 9" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <text x="875" y="490" textAnchor="end" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="32" fontWeight="500">works beautifully</text>
+                  {/* Right "works beautifully" — mirror */}
+                  <path d="M705 380 Q680 360 655 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M655 335 l13 -1 M655 335 l4 12" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <text x="880" y="395" textAnchor="end" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="28" fontWeight="500">works beautifully</text>
 
-                  {/* Top "the richest reading" — NAVY */}
-                  <path d="M450 78 Q450 128 450 180" fill="none" style={{ stroke: "#28374F" }} strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="M450 180 l-8 -11 M450 180 l8 -11" fill="none" style={{ stroke: "#28374F" }} strokeWidth="1.8" strokeLinecap="round" />
-                  <text x="450" y="58" textAnchor="middle" style={{ fill: "#28374F" }} fontFamily="'Caveat', cursive" fontSize="34" fontWeight="600">the richest reading</text>
+                  {/* Top "the richest reading" — navy in light, white in dark */}
+                  <path d="M450 78 Q450 128 450 180" fill="none" style={{ stroke: "var(--richest-color)" }} strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M450 180 l-8 -11 M450 180 l8 -11" fill="none" style={{ stroke: "var(--richest-color)" }} strokeWidth="1.8" strokeLinecap="round" />
+                  <text x="450" y="58" textAnchor="middle" style={{ fill: "var(--richest-color)" }} fontFamily="'Caveat', cursive" fontSize="34" fontWeight="600">the richest reading</text>
 
-                  {/* Right side C annotation — arrowhead aligned to tangent */}
+                  {/* Right side C annotation — right-aligned so it stays inside the viewbox */}
                   <path d="M710 465 Q640 460 555 448" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
                   <path d="M555 448 l12 -4 M555 448 l11 7" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
-                  <text x="720" y="460" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="26" fontWeight="500">lovely to revisit —</text>
-                  <text x="720" y="488" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="26" fontWeight="500">less to unpack.</text>
+                  <text x="885" y="465" textAnchor="end" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="24" fontWeight="500">lovely to revisit —</text>
+                  <text x="885" y="491" textAnchor="end" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="24" fontWeight="500">less to unpack.</text>
                 </g>
 
                 {/* Invisible overlap interaction zone — drawn last so it captures events over A/B */}
@@ -472,7 +471,6 @@ export default function LandingPage() {
           <div className={styles.container}>
             <p className={styles.testimonialEyebrow}>Reviews</p>
             <h2 className={styles.testimonialTitle}>From readers who already use it.</h2>
-            <p className={styles.testimonialSubtitle}>Real users. Real highlights. Real reading.</p>
 
             <div className={styles.testimonialGrid}>
               {([
@@ -542,10 +540,10 @@ export default function LandingPage() {
         <section id="cta-section" className={styles.ctaSection} aria-label="Download">
           <div className={styles.ctaCurvedTop}>
             <div className={styles.ctaContent}>
-              <h2 className={styles.ctaTitle}>Your highlights are waiting.</h2>
+              <h2 className={styles.ctaTitle}>Give your highlights a thinking partner.</h2>
               <p className={styles.ctaSubtitle}>Free to download. No credit card required.</p>
               <p className={styles.ctaSubtitleSecondary}>Built for readers who already highlight. Now those highlights have a home.</p>
-              
+
               <div className={styles.storeButtonsRow}>
                 <div className={styles.storeCol}>
                   <a href="https://play.google.com" target="_blank" rel="noopener noreferrer" className={styles.storeBadgeLink}>
@@ -556,7 +554,7 @@ export default function LandingPage() {
                   </button>
                   {showPlayStoreQR && <div className={styles.qrPlaceholder}>QR Code</div>}
                 </div>
-                
+
                 <div className={styles.storeCol}>
                   <a href="https://apps.apple.com" target="_blank" rel="noopener noreferrer" className={styles.storeBadgeLink}>
                     <img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83" alt="Download on the App Store" className={styles.storeBadgeImg} />
@@ -567,16 +565,6 @@ export default function LandingPage() {
                   {showAppStoreQR && <div className={styles.qrPlaceholder}>QR Code</div>}
                 </div>
               </div>
-
-              <p className={styles.ctaBottomNote}>
-                <Link to="/for-you" className={styles.ctaTrustLink}>
-                  No Kindle device needed <span className={styles.ctaTrustArrow}>→</span>
-                </Link>
-                <span className={styles.ctaTrustSeparator}>·</span>
-                <span>Works with Kindle, PDFs, ePubs</span>
-                <span className={styles.ctaTrustSeparator}>·</span>
-                <span>Free forever for core features</span>
-              </p>
             </div>
           </div>
         </section>
@@ -586,7 +574,7 @@ export default function LandingPage() {
       <footer className={styles.footer} role="contentinfo">
         <div className={styles.container}>
           <div className={styles.footerLogo}>
-            <img 
+            <img
               src="/images/logo.png"
               alt="2Read logo"
               className={styles.logoImage}
@@ -594,20 +582,41 @@ export default function LandingPage() {
             <span className={styles.logoText}>2Read.</span>
           </div>
 
-          <div className={styles.footerGrid}>
+          <div className={styles.footerBody}>
+            <div className={styles.footerBadges}>
+              <a
+                href="https://www.producthunt.com/products/2read-3/launches/2read-4"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.footerBadgeLink}
+              >
+                <img
+                  src="/images/ph-badge-day.png"
+                  alt="Product Hunt — Product of the Day #4"
+                  className={styles.footerBadgeImg}
+                />
+              </a>
+              <a
+                href="https://www.producthunt.com/products/2read-3/launches/2read-4"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.footerBadgeLink}
+              >
+                <img
+                  src="/images/ph-badge-week.png"
+                  alt="Product Hunt — Product of the Week #3 in Productivity"
+                  className={styles.footerBadgeImg}
+                />
+              </a>
+            </div>
+
             <div className={styles.footerCol}>
-              <Link to="/about" className={styles.footerLink}>About</Link>
+              <Link to="/about" className={styles.footerLink}>Why</Link>
               <Link to="/pricing" className={styles.footerLink}>Pricing</Link>
               <Link to="/faq" className={styles.footerLink}>FAQ</Link>
             </div>
             <div className={styles.footerCol}>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Instagram</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>YouTube</a>
               <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>X</a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>TikTok</a>
-            </div>
-            <div className={styles.footerCol}>
-              <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Medium</a>
               <a href="#" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>Substack</a>
               <Link to="/bookshots" className={styles.footerLinkAccent}>BookShots</Link>
             </div>

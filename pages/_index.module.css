@@ -1,10 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Epilogue:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap');
 
 /* ============================================
    THEME TOKENS & PAGE
    ============================================ */
 .pageWrapper {
   --page-bg: #FBFAF6;
+  --page-bg-rgb: 251, 250, 246;
   --text-main: #1A1A1A;
   --text-muted: #8A8680;
   --accent-color: #DA7756;
@@ -26,6 +27,7 @@
 
 :global(.dark) .pageWrapper {
   --page-bg: #0F0F0F;
+  --page-bg-rgb: 15, 15, 15;
   --text-main: #F0EFEB;
   --text-muted: #8A8680;
   --card-bg: #161616;
@@ -155,13 +157,133 @@
    ============================================ */
 .heroSection {
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  min-height: min(820px, 90vh);
   padding: 9rem 0 8rem;
   background: var(--page-bg);
   text-align: center;
 }
 
+/* Copy sits above the video and both scrim layers */
+.heroSection .container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-width: 0;
+}
+
 @media (max-width: 900px) {
-  .heroSection { padding: 6rem 0 5rem; }
+  .heroSection {
+    padding: 6rem 0 5rem;
+    min-height: min(660px, 80vh);
+  }
+}
+
+/* ---- Hero background video ------------------------------------------------
+   Paint order (bottom -> top):
+     1. .heroMedia  - inlined tiny LQIP, so the hero has colour on first paint
+                      with zero network requests
+     2. video       - shows its poster (~80KB) until buffered, then plays that
+                      same frame onward, so the handoff is invisible
+   A portrait phone gets a natively-framed 9:16 clip instead of a cropped 16:9
+   one; the query below must stay in step with HERO_MOBILE_QUERY in _index.tsx.
+     3. .heroVeil   - radial page-bg wash, densest behind the copy
+     4. .heroFade   - vertical fade dissolving the clip into the page at both
+                      edges, fully page-bg by the bottom of the section
+--------------------------------------------------------------------------- */
+.heroMedia {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: var(--page-bg);
+  background-image: url("data:image/jpeg;base64,/9j//gAPTGF2YzYzLjEuMTAxAP/bAEMACCgoLygvNzc3Nzc3QTxBQ0NDQUFBQUNDQ0hISFVVVUhISENDSEhQUFVVXF9cV1dVV19fZGRkeHhzc4yMkaysz//EAGsAAQEBAQEAAAAAAAAAAAAAAAYEBQIDAQEBAQAAAAAAAAAAAAAAAAACBAUQAAEDAgYCAwEAAAAAAAAAAAEAEQIDcSExEhNBMmHBoYGRUREAAgIDAAMBAAAAAAAAAAAAADEBAoESE8GxYdH/wAARCAASACADASIAAhEAAxEA/9oADAMBAAIRAxEAPwDQ2YGoRkGH0vWNKm5GnVgPDHFCROROJkH58KvdmC7k+Tz/ABTb/oOcvDEuxHUHAiCC3OTKXajrZhl7WNKsS2f6VMasiXDu3wlv89A5T4YQjiTdb9XqLo9DM3SCt1F1BLqb0K+TqjjE3Rk4EJPR6m/pFpcJQ7BlUP/Z");
+  background-size: cover;
+  background-position: center 45%;
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 900px) and (orientation: portrait) {
+  .heroMedia {
+    background-image: url("data:image/jpeg;base64,/9j//gAPTGF2YzYzLjEuMTAxAP/bAEMACCgoLygvNzc3Nzc3QTxBQ0NDQUFBQUNDQ0hISFVVVUhISENDSEhQUFVVXF9cV1dVV19fZGRkeHhzc4yMkaysz//EAG4AAAMBAQEBAAAAAAAAAAAAAAUDBgQBAAIBAAMBAQAAAAAAAAAAAAAAAAMFBAECEAACAQIFBAMBAQAAAAAAAAABAgATETEDUiFBkfChgWIUcSJhEQADAAIDAQAAAAAAAAAAAAABABEhUSIxkRL/wAARCAAgABIDASIAAhEAAxEA/9oADAMBAAIRAxEAPwB9FAxBOAHWYTlLxf3DoYVGwwG/d4QbMUKRth3xNBDDncZsZFwDbzGfX/zzPtc1QB/QwHDR1ZdQ6NBeJGNVipx/bze2a3xtBbAKC0EqQ2w9RXAczpdEEGbaasBtYTtcaRBNMap6muqc8Wn4L//Z");
+    background-position: center center;
+  }
+
+  .heroVideo {
+    object-position: center center;
+  }
+}
+
+.heroVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center 45%;
+  filter: saturate(0.85) contrast(0.96);
+}
+
+.heroVeil,
+.heroFade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.heroVeil {
+  background: radial-gradient(
+    ellipse 78% 60% at 50% 44%,
+    rgba(var(--page-bg-rgb), 0.88) 0%,
+    rgba(var(--page-bg-rgb), 0.70) 42%,
+    rgba(var(--page-bg-rgb), 0.26) 72%,
+    rgba(var(--page-bg-rgb), 0.06) 100%
+  );
+}
+
+.heroFade {
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--page-bg-rgb)) 0%,
+    rgba(var(--page-bg-rgb), 0.62) 10%,
+    rgba(var(--page-bg-rgb), 0.18) 30%,
+    rgba(var(--page-bg-rgb), 0.20) 55%,
+    rgba(var(--page-bg-rgb), 0.74) 82%,
+    rgb(var(--page-bg-rgb)) 97%
+  );
+}
+
+/* Dark theme: tame the bright daylight clip against the near-black page */
+:global(.dark) .heroVideo {
+  filter: saturate(0.78) brightness(0.66) contrast(1.02);
+}
+
+:global(.dark) .heroVeil {
+  background: radial-gradient(
+    ellipse 78% 60% at 50% 44%,
+    rgba(var(--page-bg-rgb), 0.86) 0%,
+    rgba(var(--page-bg-rgb), 0.66) 42%,
+    rgba(var(--page-bg-rgb), 0.30) 72%,
+    rgba(var(--page-bg-rgb), 0.10) 100%
+  );
+}
+
+@media (max-width: 900px) {
+  /* Narrow viewports crop hard, so lean the veil on the vertical axis */
+  .heroVeil {
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--page-bg-rgb), 0.72) 0%,
+      rgba(var(--page-bg-rgb), 0.80) 45%,
+      rgba(var(--page-bg-rgb), 0.72) 100%
+    );
+  }
 }
 
 .heroCopy {
@@ -222,7 +344,10 @@
 .heroAction {
   margin: 0 auto;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  gap: 0.75rem;
 }
 
 .downloadBtn {
@@ -1674,4 +1799,436 @@
     gap: var(--spacing-4);
     text-align: center;
   }
+}
+/* ============================================
+   SCROLL REVEAL
+   Wiring lives in helpers/useScrollReveal.ts. Elements carrying [data-reveal]
+   animate themselves; [data-reveal-group] elements stay put and choreograph
+   their own children. Everything is scoped under .pageWrapper so these
+   attribute selectors can't leak onto other pages.
+
+   The page is a client-rendered SPA, so hiding by default is safe: without JS
+   there is no page at all. With JS but no IntersectionObserver, the hook marks
+   everything revealed immediately.
+   ============================================ */
+
+.pageWrapper [data-reveal] {
+  opacity: 0;
+  transition:
+    opacity 720ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 720ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* --- resting offsets, per variant ---------------------------------------- */
+
+/* the workhorse: a short lift into place */
+.pageWrapper [data-reveal="rise"] {
+  transform: translateY(22px);
+}
+
+/* slower, shorter — for a line that should feel like it lands quietly */
+.pageWrapper [data-reveal="settle"] {
+  transform: translateY(10px);
+  transition-duration: 1100ms;
+}
+
+/* opacity only: safe on inline text, where a transform would break line-wrap */
+.pageWrapper [data-reveal="fade"] {
+  transform: none;
+  transition-duration: 900ms;
+}
+
+/* for cards and badges — arrives with a little presence */
+.pageWrapper [data-reveal="lift"] {
+  transform: translateY(18px) scale(0.985);
+}
+
+/* The revealed state MUST come after every variant above: these selectors all
+   have the same specificity, so source order is what decides the winner. Move
+   this up and elements would fade in but stay stuck at their offset. */
+.pageWrapper [data-reveal-state="in"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pageWrapper [data-reveal],
+  .pageWrapper [data-reveal-group] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   I — THE PROMISE
+   The bridge diagram draws itself: the two arrows travel left to right, the
+   fan they open into fades in behind them, then the labels land. The arrow
+   HEADS are held back until the lines arrive, otherwise the marker paints the
+   destination before the journey.
+   ============================================ */
+
+.bridgeLine {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1400ms cubic-bezier(0.33, 0.1, 0.2, 1);
+}
+
+.bridgeDiagram[data-reveal-state="in"] .bridgeLine {
+  stroke-dashoffset: 0;
+}
+
+.bridgeDiagram[data-reveal-state="in"] .bridgeLineB {
+  transition-delay: 180ms;
+}
+
+/* Markers are instanced from one <defs> node, so this fades every arrowhead */
+.bridgeArrowHead {
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+
+.bridgeDiagram[data-reveal-state="in"] .bridgeArrowHead {
+  opacity: 1;
+  transition-delay: 1500ms;
+}
+
+.bridgeFan,
+.bridgeLabel {
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.bridgeDiagram[data-reveal-state="in"] .bridgeFan {
+  opacity: 1;
+  transition-delay: 900ms;
+}
+
+.bridgeDiagram[data-reveal-state="in"] .bridgeLabel {
+  opacity: 1;
+}
+
+.bridgeDiagram[data-reveal-state="in"] .bridgeLabelA { transition-delay: 300ms; }
+.bridgeDiagram[data-reveal-state="in"] .bridgeLabelB { transition-delay: 480ms; }
+.bridgeDiagram[data-reveal-state="in"] .bridgeLabelC { transition-delay: 1450ms; }
+
+/* The sideload chain traces itself step by step, the way the flow is followed */
+.sideloadSteps[data-reveal-group] > * {
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 460ms ease,
+    transform 460ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.sideloadSteps[data-reveal-state="in"] > * {
+  opacity: 1;
+  transform: none;
+}
+
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(1) { transition-delay: 0ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(2) { transition-delay: 70ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(3) { transition-delay: 140ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(4) { transition-delay: 210ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(5) { transition-delay: 280ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(6) { transition-delay: 350ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(7) { transition-delay: 420ms; }
+.sideloadSteps[data-reveal-state="in"] > *:nth-child(8) { transition-delay: 490ms; }
+
+/* the destination chip lands last and a touch more deliberately */
+.sideloadSteps[data-reveal-group] > .sideloadStepAccent {
+  transform: translateY(5px) scale(0.94);
+}
+
+.sideloadSteps[data-reveal-state="in"] > .sideloadStepAccent {
+  transform: none;
+  transition-delay: 580ms;
+  transition-duration: 560ms;
+}
+
+/* ============================================
+   II — THE LADDER
+   Each rung's hairline draws across before its text arrives, so the ladder
+   builds itself a step at a time as you climb it.
+   ============================================ */
+
+.ladderRung[data-reveal-group] {
+  position: relative;
+  border-top-color: transparent;
+}
+
+.ladderRung[data-reveal-group]::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--card-border);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 760ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ladderRung[data-reveal-state="in"]::before {
+  transform: scaleX(1);
+}
+
+.ladderRung[data-reveal-group] > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 660ms ease,
+    transform 660ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ladderRung[data-reveal-state="in"] > * {
+  opacity: 1;
+  transform: none;
+}
+
+.ladderRung[data-reveal-state="in"] > *:nth-child(1) { transition-delay: 220ms; }
+.ladderRung[data-reveal-state="in"] > *:nth-child(2) { transition-delay: 330ms; }
+
+/* ============================================
+   III — WHO THE PARTNER SERVES
+   The two reader circles bloom outward, the overlap they create resolves, then
+   the pencilled notes are written in afterwards — diagram first, annotation
+   second, the order someone would actually mark it up in.
+   ============================================ */
+
+.readerCircle {
+  opacity: 0;
+  transform: scale(0.86);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 900ms ease,
+    transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.readerDiagram[data-reveal-state="in"] .readerCircle {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.readerDiagram[data-reveal-state="in"] .readerCircleA { transition-delay: 0ms; }
+.readerDiagram[data-reveal-state="in"] .readerCircleB { transition-delay: 160ms; }
+.readerDiagram[data-reveal-state="in"] .readerCircleC { transition-delay: 320ms; }
+
+.readerLabels {
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.readerDiagram[data-reveal-state="in"] .readerLabels {
+  opacity: 1;
+  transition-delay: 480ms;
+}
+
+/* handwritten annotations, written in after the diagram has settled */
+.readerNote {
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.readerNoteLine {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 620ms cubic-bezier(0.33, 0.1, 0.2, 1);
+}
+
+.readerDiagram[data-reveal-state="in"] .readerNote { opacity: 1; }
+.readerDiagram[data-reveal-state="in"] .readerNoteLine { stroke-dashoffset: 0; }
+
+.readerDiagram[data-reveal-state="in"] .readerNote1 { transition-delay: 760ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteLine1 { transition-delay: 900ms; }
+.readerDiagram[data-reveal-state="in"] .readerNote2 { transition-delay: 900ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteLine2 { transition-delay: 1040ms; }
+.readerDiagram[data-reveal-state="in"] .readerNote3 { transition-delay: 1060ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteLine3 { transition-delay: 1200ms; }
+.readerDiagram[data-reveal-state="in"] .readerNote4 { transition-delay: 1220ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteLine4 { transition-delay: 1360ms; }
+
+/* ============================================
+   TESTIMONIALS
+   Cards settle in sequence, like reviews being laid down on a table.
+   ============================================ */
+
+.testimonialGrid[data-reveal-group] > * {
+  opacity: 0;
+  transform: translateY(20px) scale(0.985);
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.testimonialGrid[data-reveal-state="in"] > * {
+  opacity: 1;
+  transform: none;
+}
+
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(1) { transition-delay: 0ms; }
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(2) { transition-delay: 110ms; }
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(3) { transition-delay: 220ms; }
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(4) { transition-delay: 60ms; }
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(5) { transition-delay: 150ms; }
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(6) { transition-delay: 240ms; }
+.testimonialGrid[data-reveal-state="in"] > *:nth-child(7) { transition-delay: 330ms; }
+
+/* ============================================
+   CTA — the close. Calm and square-on: no sideways drift, just weight
+   arriving, with the store badges last.
+   ============================================ */
+
+.storeButtonsRow[data-reveal-group] > * {
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.storeButtonsRow[data-reveal-state="in"] > * {
+  opacity: 1;
+  transform: none;
+}
+
+.storeButtonsRow[data-reveal-state="in"] > *:nth-child(1) { transition-delay: 120ms; }
+.storeButtonsRow[data-reveal-state="in"] > *:nth-child(2) { transition-delay: 240ms; }
+
+/* Arrow tips wait for their line to arrive, so nothing points before it leads */
+.readerNoteTip {
+  opacity: 0;
+  transition: opacity 380ms ease;
+}
+
+.readerDiagram[data-reveal-state="in"] .readerNoteTip { opacity: 1; }
+
+.readerDiagram[data-reveal-state="in"] .readerNoteTip1 { transition-delay: 1500ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteTip2 { transition-delay: 1640ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteTip3 { transition-delay: 1800ms; }
+.readerDiagram[data-reveal-state="in"] .readerNoteTip4 { transition-delay: 1960ms; }
+
+/* Interactive-demo trigger on a ladder rung.
+   Neutral like the rest of the page furniture, but with a slow shine that
+   travels across every few seconds — enough to catch the eye on a page of
+   still text, short of blinking at it. The faint fill exists so the shine has
+   something to lighten; on a transparent button it would be invisible. */
+.ladderDemoBtn {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.5rem 1.125rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text-main);
+  background-color: rgba(26, 24, 21, 0.045);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* the travelling shine */
+.ladderDemoBtn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 45%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.85) 50%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  animation: demoBtnShine 4.2s ease-in-out infinite;
+}
+
+@keyframes demoBtnShine {
+  0%, 62% { left: -60%; }
+  92%, 100% { left: 120%; }
+}
+
+.ladderDemoBtn:hover {
+  background-color: var(--card-bg);
+  border-color: var(--text-muted);
+  box-shadow: 0 2px 12px rgba(26, 24, 21, 0.08);
+  transform: translateY(-1px);
+}
+
+.ladderDemoBtn:focus-visible {
+  outline: 2px solid var(--text-main);
+  outline-offset: 3px;
+}
+
+:global(.dark) .ladderDemoBtn {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+:global(.dark) .ladderDemoBtn::after {
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.16) 50%,
+    transparent 100%
+  );
+}
+
+:global(.dark) .ladderDemoBtn:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ladderDemoBtn::after { animation: none; opacity: 0; }
+  .ladderDemoBtn:hover { transform: none; }
+}
+
+/* Hero secondary action: outlined so it reads as the quieter of the pair.
+   The border and a light wash are deliberately stronger than --card-border:
+   this button sits over the video, where a hairline on the page background
+   disappears against the moving image. */
+.tryFirstBtn {
+  background-color: rgba(var(--page-bg-rgb), 0.55) !important;
+  color: var(--text-main) !important;
+  border: 1px solid rgba(26, 24, 21, 0.24) !important;
+  backdrop-filter: blur(2px);
+  border-radius: var(--radius-full) !important;
+  padding: 0 var(--spacing-6) !important;
+  height: 2.5rem !important;
+  font-size: 0.875rem !important;
+  font-weight: 400 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color 200ms ease, border-color 200ms ease !important;
+}
+
+.tryFirstBtn:hover {
+  background-color: rgba(var(--page-bg-rgb), 0.85) !important;
+  border-color: rgba(26, 24, 21, 0.4) !important;
+}
+
+:global(.dark) .tryFirstBtn {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+:global(.dark) .tryFirstBtn:hover {
+  border-color: rgba(255, 255, 255, 0.5) !important;
 }

@@ -1,0 +1,1241 @@
+/* ============================================================
+   Feature demos — shared phone shell
+
+   One set of styles drives every feature demo, so they are identical by
+   construction rather than by copy-paste.
+
+   A 1:1 replica of the 2Read phone screen, so it keeps its OWN light palette
+   rather than inheriting the site's theme tokens: it should read as the
+   product, not as part of the page. It renders through a portal, so the page's
+   scroll-reveal rules can't reach it either.
+
+   SCALE
+   Every dimension below is measured from the phone at a 360px screen width and
+   expressed in `em` against the base font-size set on .content. That base is
+   the single scale knob: shrink it and the whole screen scales exactly, with
+   text staying crisp (unlike transform: scale). 1em = 16px at full size, so an
+   em value here is simply the phone pixel value / 16.
+   ============================================================ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(26, 24, 21, 0.55);
+  backdrop-filter: blur(4px);
+  display: grid;
+  justify-items: center;
+  align-content: safe center;
+  padding: 1rem;
+  overflow-y: auto;
+  animation: overlayIn 260ms ease;
+}
+
+.content {
+  /* Full size at 16px, then whichever of width/height binds takes over so the
+     panel always fits without clipping.
+     The 56 is measured, not guessed: the tallest layout (a highlight demo,
+     counting the dismiss link above and the language line below) comes to
+     54.9em, and the 2rem matches the overlay's own padding. Undershoot either
+     and the panel overflows a short window — which centring then clips at the
+     TOP, where the close button lives. Re-measure if the footer changes. */
+  font-size: min(16px, calc((100vw - 2rem) / 23), calc((100vh - 2rem) / var(--panel-em, 56)));
+  position: relative;
+  z-index: 101;
+  width: 22.5em;
+  margin: 0;
+  outline: none;
+  animation: panelIn 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- the phone screen ---------------------------------------------------- */
+
+.screen {
+  position: relative;
+  box-sizing: border-box;
+  width: 22.5em;            /* 360px */
+  height: 48.5em;           /* every demo is the same phone, so one height */
+  display: flex;
+  flex-direction: column;
+  background-color: #efece4;
+  border-radius: 1.75em;    /* 28px */
+  padding-bottom: 2em;      /* 32px */
+  box-shadow:
+    0 1.5em 3.75em rgba(20, 18, 15, 0.34),
+    0 0.125em 0.5em rgba(20, 18, 15, 0.18);
+  overflow: hidden;
+}
+
+/* --- iOS status bar ------------------------------------------------------ */
+
+.statusBar {
+  flex: none;
+  height: 2.75em;           /* 44px */
+  padding: 0 1.5em;         /* 24px */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #1f1d1a;
+}
+
+.statusTime {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.9375em;      /* 15px */
+  letter-spacing: 0.01em;
+}
+
+.statusIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.375em;             /* 6px */
+}
+
+.statusIcon {
+  display: block;
+  fill: currentColor;
+}
+
+.signalIcon  { width: 1.0625em; height: 0.75em; }  /* 17 x 12 */
+.wifiIcon    { width: 1em;      height: 0.75em; }  /* 16 x 12 */
+.batteryIcon { width: 1.625em;  height: 0.75em; }  /* 26 x 12 */
+
+/* --- book heading -------------------------------------------------------- */
+
+.bookTitle {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.875em;       /* 14px */
+  line-height: 1.3;
+  color: #1f1d1a;
+  text-align: center;
+  margin: 1em 1.5em 0;
+}
+
+.bookByline {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  font-size: 0.6875em;      /* 11px */
+  color: #8a8680;
+  text-align: center;
+  margin: 0.36em 0 0;
+}
+
+/* --- highlight card ------------------------------------------------------ */
+
+.cardArea {
+  flex: none;
+  position: relative;
+  width: 18em;              /* 288px */
+  height: 30.375em;         /* 486px */
+  margin: 2em auto 0;       /* 32px below the heading */
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  background-color: #f7f5f1;
+  border: 1px solid #e8e4dc;
+  border-radius: 1.25em;    /* 20px */
+  padding: 0.625em 1.8125em 1.25em;   /* 10px / 29px / 20px */
+  display: flex;
+  flex-direction: column;
+  transition: filter 260ms ease;
+}
+
+/* the sheet blurs what sits behind it, as it does in the app */
+.cardBlurred { filter: blur(0.44em); }
+
+.cardCount {
+  font-family: "Inter", sans-serif;
+  font-size: 0.5em;         /* 8px */
+  color: #9a958d;
+  text-align: center;
+  margin: 0;
+}
+
+.quoteWrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.quote {
+  font-family: "Newsreader", serif;
+  font-weight: 400;
+  font-size: 1.0625em;      /* 17px */
+  line-height: 1.3;
+  color: #1f1d1a;
+  margin: auto 0;
+  /* nothing here is selectable: the word is the only interactive target */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* --- the one selectable word --------------------------------------------- */
+
+.wordWrap {
+  position: relative;
+  display: inline-block;
+}
+
+/* At rest it must look like ordinary body text: the reader is ASKED to find
+   and select it, so no resting decoration. Hover/focus previews the selection
+   colour so it stays discoverable with a pointer or a keyboard. */
+.word {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: background-color 180ms ease;
+}
+
+.word:hover {
+  background-color: rgba(174, 206, 240, 0.55);
+}
+
+/* selected: the phone's blue text selection */
+.wordSelected,
+.wordSelected:hover {
+  background-color: #aecef0;
+  cursor: default;
+}
+
+/* --- the "Smart Dictionary" chip ----------------------------------------- */
+
+.chip {
+  position: absolute;
+  top: calc(100% + 0.25em);
+  left: 50%;
+  transform: translateX(-32%);
+  z-index: 3;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-size: 0.75em;        /* 12px */
+  white-space: nowrap;
+  color: #1f1d1a;
+  background-color: #eeece6;
+  border: 1px solid #e2ded4;
+  border-radius: 0.5em;
+  padding: 0.42em 0.75em;
+  cursor: pointer;
+  box-shadow: 0 0.25em 0.75em rgba(20, 18, 15, 0.14);
+  animation: chipIn 200ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.chip:hover { background-color: #e6e3db; }
+
+@keyframes chipIn {
+  from { opacity: 0; transform: translateX(-32%) translateY(-0.25em) scale(0.94); }
+  to { opacity: 1; transform: translateX(-32%); }
+}
+
+/* --- card footer --------------------------------------------------------- */
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardLocation {
+  font-family: "Inter", sans-serif;
+  font-size: 0.5625em;      /* 9px */
+  color: #8a8680;
+}
+
+.cardIcons {
+  display: flex;
+  align-items: center;
+  gap: 1.0625em;            /* 17px */
+  color: #3a3733;
+}
+
+/* --- bottom action row --------------------------------------------------- */
+
+.actions {
+  flex: none;
+  width: 18em;
+  margin: 3.1875em auto 0;  /* 51px below the card */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.3125em;            /* 21px */
+  transition: filter 260ms ease;
+}
+
+.actionsBlurred { filter: blur(0.44em); }
+
+.actionKey {
+  height: 4.625em;          /* 74px */
+  border-radius: 1.125em;   /* 18px */
+  background-color: #faf8f5;
+  display: grid;
+  place-items: center;
+  color: #2b2825;
+}
+
+/* --- the result sheet ---------------------------------------------------- */
+
+.sheet {
+  position: absolute;
+  inset: -0.5em -1em;       /* slightly wider than the card, as on the phone */
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  background-color: #fbfaf7;
+  border: 1px solid #ece8e0;
+  border-radius: 1.25em;
+  padding: 1.5em 1.25em 1.25em;
+  box-shadow: 0 1.125em 2.875em rgba(20, 18, 15, 0.22);
+  animation: sheetIn 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes sheetIn {
+  from { opacity: 0; transform: translateY(0.5em) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* long answers scroll inside the panel; title and buttons stay put */
+.sheetScroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin-bottom: 1em;
+}
+
+/* a short fade at the foot of the scroller so a long answer visibly continues
+   rather than just stopping mid-line against the buttons */
+.sheetScrollFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3.4em;
+  height: 1.6em;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(251, 250, 247, 0), #fbfaf7);
+}
+
+.sheetTitle {
+  flex: none;
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 1.125em;       /* 18px */
+  color: #1f1d1a;
+  text-align: center;
+  margin: 0 0 0.9em;
+}
+
+/* Result copy. Bodies are markdown so one renderer covers a two-line
+   definition and a multi-section book summary. */
+.sheetProse {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875em;       /* 14px */
+  line-height: 1.6;
+  color: #33302b;
+}
+
+.sheetProse > :first-child { margin-top: 0; }
+.sheetProse > :last-child { margin-bottom: 0; }
+
+.sheetProse p {
+  margin: 0 0 1em;
+}
+
+/* the summary's own title */
+.sheetProse h1 {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 1.15em;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f1d1a;
+  margin: 1.6em 0 0.7em;
+}
+
+/* section headings inside a summary */
+.sheetProse h2,
+.sheetProse h3,
+.sheetProse h4 {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #1f1d1a;
+  margin: 1.5em 0 0.5em;
+}
+
+.sheetProse strong {
+  font-weight: 600;
+  color: #1f1d1a;
+}
+
+.sheetProse em {
+  font-style: italic;
+}
+
+.sheetProse hr {
+  height: 0;
+  border: 0;
+  border-top: 1px solid #e6e1d8;
+  margin: 1.4em 0;
+}
+
+.sheetActions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75em;
+}
+
+.sheetBtn {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.875em;       /* 14px */
+  border-radius: 999px;
+  padding: 0.6em 1.6em;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.sheetSave {
+  background-color: transparent;
+  border: 1.5px solid #d2694e;
+  color: #d2694e;
+}
+
+.sheetSave:hover:not(:disabled) { background-color: rgba(210, 105, 78, 0.09); }
+.sheetSave:disabled { cursor: default; opacity: 0.75; }
+
+.sheetClose {
+  background-color: #d2694e;
+  border: 1.5px solid #d2694e;
+  color: #ffffff;
+}
+
+.sheetClose:hover { background-color: #c25d43; }
+
+/* --- coaching line ------------------------------------------------------- */
+
+.hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  margin: 0;
+  min-height: 1.25em;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;
+  color: #ffffff;
+  text-align: center;
+}
+
+.hintWord { font-weight: 600; }
+
+.hintDot {
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 50%;
+  background-color: #da7756;
+  flex-shrink: 0;
+  animation: hintPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+.hintReplay {
+  font: inherit;
+  color: #ffffff;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  padding: 0;
+  cursor: pointer;
+}
+
+.hintReplay:hover { border-bottom-color: #ffffff; }
+
+/* --- dismiss ------------------------------------------------------------- */
+
+.dismiss {
+  position: absolute;
+  top: -2.25em;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375em;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;
+  color: rgba(255, 255, 255, 0.82);
+  background: none;
+  border: 0;
+  padding: 0.25em;
+  cursor: pointer;
+}
+
+.dismiss:hover { color: #ffffff; }
+
+/* --- focus rings --------------------------------------------------------- */
+
+.word:focus-visible,
+.chip:focus-visible,
+.sheetBtn:focus-visible {
+  outline: 2px solid #da7756;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.dismiss:focus-visible,
+.hintReplay:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .content,
+  .chip,
+  .sheet,
+  .hintDot {
+    animation: none;
+  }
+}
+
+/* --- "tap here" cue ------------------------------------------------------
+   The word itself stays undecorated, so the instruction has to be carried by
+   a pointer rather than by styling the target. It sits just below the word:
+   the fingertip touches the baseline while the text stays fully legible. */
+
+.tapCue {
+  position: absolute;
+  left: 50%;
+  top: 76%;
+  transform: translate(-50%, 0);
+  z-index: 4;
+  pointer-events: none;
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+.tapRipple {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 2.4em;
+  height: 2.4em;
+  margin: -1.2em 0 0 -1.2em;
+  border: 0.125em solid #da7756;
+  border-radius: 50%;
+  animation: tapRipple 1.7s cubic-bezier(0.2, 0.6, 0.35, 1) infinite;
+}
+
+@keyframes tapRipple {
+  0%   { transform: scale(0.3); opacity: 0; }
+  25%  { opacity: 0.85; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* Outline only, for two reasons: the interior stays transparent so the line of
+   text it crosses is still readable, and lucide's Pointer is built from OPEN
+   paths meant to be stroked — filling it makes each subpath auto-close into
+   blobs, which is what chopped the hand up. The pale halo keeps the orange
+   stroke legible against the serif underneath. */
+.tapHand {
+  position: absolute;
+  left: 50%;
+  top: -0.3em;
+  width: 1.9em;
+  height: 1.9em;
+  margin-left: -0.55em;
+  color: #c2563a;
+  fill: none;
+  stroke-width: 2.1;
+  filter:
+    drop-shadow(0 0 0.1em rgba(253, 250, 246, 0.95))
+    drop-shadow(0 0 0.05em rgba(253, 250, 246, 0.9))
+    drop-shadow(0 0.06em 0.12em rgba(20, 18, 15, 0.22));
+  animation: tapNudge 1.7s ease-in-out infinite;
+}
+
+@keyframes tapNudge {
+  0%, 100% { transform: translateY(0.22em); }
+  22%      { transform: translateY(0); }
+  45%      { transform: translateY(0.22em); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tapRipple { animation: none; opacity: 0.7; transform: scale(1); }
+  .tapHand { animation: none; transform: translateY(0.1em); }
+}
+
+/* A pulsing OUTLINE around the target. Deliberately not a fill: a filled wash
+   reads as an already-made text selection, an outline reads as "here". */
+.wordTarget {
+  position: absolute;
+  inset: -0.12em -0.2em;
+  border: 0.1em solid #da7756;
+  border-radius: 0.28em;
+  pointer-events: none;
+  animation: targetPulse 1.7s ease-in-out infinite;
+}
+
+@keyframes targetPulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.035); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordTarget { animation: none; opacity: 0.85; }
+}
+
+/* --- an action key as the tap target (the ✦ button) ---------------------- */
+
+.actionKeyButton {
+  position: relative;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.keyTarget {
+  position: absolute;
+  inset: -0.25em;
+  border: 0.1em solid #da7756;
+  border-radius: 1.3em;
+  pointer-events: none;
+  animation: targetPulse 1.7s ease-in-out infinite;
+}
+
+/* the cue sits over the key's centre rather than on a word baseline */
+.keyCue {
+  left: 50%;
+  top: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .keyTarget { animation: none; opacity: 0.85; }
+}
+
+/* --- footer: coaching line, then the example switcher -------------------- */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5em;
+  margin-top: 0.85em;
+}
+
+.footerRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75em;
+}
+
+.tryAnother {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 0.45em 1em;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.tryAnother:hover {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+.tryAnother:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.exampleCount {
+  font-family: "Inter", sans-serif;
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.62);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   SUMMARY LAYOUT — the book-level screen
+   Title and author at the top, then the summary itself. No card, no panel:
+   Synthesis is about the whole book, so there is nothing to overlay.
+   ============================================================ */
+
+.bookCaption {
+  font-family: "Inter", sans-serif;
+  font-size: 0.625em;       /* 10px */
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #a29d94;
+  text-align: center;
+  margin: 0.7em 0 0;
+}
+
+/* the general summary is set apart from the three lenses by a hairline */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  width: 18em;
+  margin: 1.35em auto 0;
+}
+
+.tabsDivider {
+  width: 1px;
+  height: 1.1em;
+  background-color: #ddd8cd;
+  margin: 0 0.15em;
+}
+
+.tab {
+  font-family: "Inter", sans-serif;
+  font-size: 0.6875em;      /* 11px */
+  font-weight: 500;
+  line-height: 1.2;
+  color: #6d6862;
+  background-color: #f5f2ec;
+  border: 1px solid #e6e1d8;
+  border-radius: 999px;
+  padding: 0.5em 0.85em;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.tab:hover {
+  background-color: #efebe3;
+  color: #1f1d1a;
+}
+
+.tabActive,
+.tabActive:hover {
+  background-color: #2b2825;
+  border-color: #2b2825;
+  color: #fdfaf6;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #da7756;
+  outline-offset: 2px;
+}
+
+/* Fixed height so the screen keeps the same footprint as the other demos
+   rather than resizing between a short lens and a long one. */
+.summaryArea {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  width: 18em;
+  margin: 1.25em auto 0;
+}
+
+.summaryScroll {
+  height: 100%;
+  padding-top: 1.25em;
+  border-top: 1px solid #e6e1d8;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* a long summary visibly continues rather than stopping mid-line */
+.summaryFade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2.25em;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(239, 236, 228, 0), #efece4);
+}
+
+.summaryEyebrow {
+  font-family: "Inter", sans-serif;
+  font-size: 0.625em;       /* 10px */
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: #c2563a;
+  margin: 0 0 0.6em;
+}
+
+.summaryTitle {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 1.125em;       /* 18px */
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f1d1a;
+  margin: 0 0 0.75em;
+}
+
+/* Not a tab: the lenses this demo doesn't carry, so the reader knows the app
+   has more. Deliberately un-clickable and styled apart from the real chips. */
+.tabMore {
+  font-family: "Inter", sans-serif;
+  font-size: 0.625em;       /* 10px */
+  font-weight: 500;
+  line-height: 1.2;
+  color: #a29d94;
+  background: none;
+  border: 1px dashed #dcd6cb;
+  border-radius: 999px;
+  padding: 0.5em 0.8em;
+  white-space: nowrap;
+}
+
+/* --- supported languages ------------------------------------------------- */
+
+.languages {
+  /* breaks out of the 22.5em phone column so the line fits on desktop */
+  width: min(46em, 88vw);
+  margin: 1em 0 0;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: baseline;
+  justify-content: safe center;
+  gap: 0.55em;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.languages::-webkit-scrollbar { display: none; }
+
+.languagesLabel {
+  flex: none;
+  font-family: "Inter", sans-serif;
+  font-size: 0.5625em;      /* 9px */
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.languagesList {
+  flex: none;
+  font-family: "Inter", sans-serif;
+  font-size: 0.5625em;      /* 9px */
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.languagesMore {
+  color: rgba(255, 255, 255, 0.45);
+  font-style: italic;
+}
+
+/* ============================================================
+   DAILY REVIEW
+   Fifteen highlight cards, then the Wisdom Spark drawn from one of them.
+   The card is plainer than the highlight-screen card: no counter, no location,
+   no icons — just the passage, because reviewing is all this screen does.
+   ============================================================ */
+
+.reviewArea {
+  flex: none;
+  position: relative;
+  width: 18em;
+  height: 30.375em;
+  margin: 1.5em auto 0;
+}
+
+.reviewCard {
+  position: absolute;
+  inset: 0;
+  background-color: #f7f5f1;
+  border: 1px solid #e8e4dc;
+  border-radius: 1.5em;
+  padding: 1.5em 1.6em;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.reviewCard:focus-visible {
+  outline: 2px solid #da7756;
+  outline-offset: 3px;
+}
+
+.reviewQuote {
+  font-family: "Newsreader", serif;
+  font-weight: 400;
+  font-size: 1.0625em;      /* 17px */
+  line-height: 1.32;
+  color: #1f1d1a;
+  margin: 0;
+  text-align: left;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+/* the tap cue rides the first card only, then gets out of the way */
+.reviewCue {
+  position: absolute;
+  left: 50%;
+  bottom: 3.5em;
+  pointer-events: none;
+}
+
+.reviewCounter {
+  flex: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.3em;
+  width: max-content;
+  margin: 1.5em auto 0;
+  padding: 0.5em 1.1em;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;      /* 13px */
+  color: #4a463f;
+  background-color: #f5f2ec;
+  border: 1px solid #e4dfd5;
+  border-radius: 999px;
+}
+
+.reviewCounter strong { font-weight: 600; color: #1f1d1a; }
+.reviewCounter em { font-style: italic; color: #8a8680; }
+
+/* Reserved whether or not the button is showing: without this the review
+   screen grew by ~4em the moment card 15 arrived. */
+.sparkTriggerSlot {
+  flex: none;
+  height: 2.9em;
+  margin-top: auto;         /* slack collects above, counter stays at the foot */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sparkTrigger {
+  display: block;
+  width: 18em;
+  padding: 0.85em 1em;
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 0.9375em;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #d2694e;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.sparkTrigger:hover { background-color: #c25d43; }
+
+.sparkTrigger:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* --- crafting --- */
+
+.crafting {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9em;
+  background-color: rgba(247, 245, 241, 0.92);
+  backdrop-filter: blur(3px);
+  border-radius: 1.5em;
+}
+
+.craftingDots {
+  display: flex;
+  gap: 0.4em;
+}
+
+.craftingDots span {
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: 50%;
+  background-color: #d2694e;
+  animation: craftBounce 1.1s ease-in-out infinite;
+}
+
+.craftingDots span:nth-child(2) { animation-delay: 0.15s; }
+.craftingDots span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes craftBounce {
+  0%, 80%, 100% { opacity: 0.3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-0.35em); }
+}
+
+.craftingText {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;
+  color: #6d6862;
+  margin: 0;
+}
+
+/* --- the Wisdom Spark screen --- */
+
+.screenDark {
+  background-color: #1a1a1a;
+}
+
+.screenDark .statusBar { color: #f2f0eb; }
+
+.sparkCard {
+  flex: 1;
+  min-height: 0;
+  width: 19.5em;
+  margin: 1.25em auto 0;
+  padding: 1.4em 1.4em 1.5em;
+  background-color: #f0ede6;
+  border-radius: 1.5em;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sparkHeading {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 0.9375em;      /* 15px */
+  font-weight: 600;
+  color: #d2694e;
+  margin: 0 0 0.9em;
+}
+
+.sparkQuote {
+  font-family: "Inter", sans-serif;
+  font-style: italic;
+  font-size: 0.875em;       /* 14px */
+  line-height: 1.6;
+  color: #2b2825;
+  margin: 0 0 1em;
+}
+
+.sparkAttribution {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875em;
+  line-height: 1.5;
+  color: #4a463f;
+  margin: 0 0 1.2em;
+}
+
+.sparkAttribution strong { font-weight: 600; color: #1f1d1a; }
+
+.sparkBody {
+  font-family: "Inter", sans-serif;
+  font-size: 0.875em;
+  line-height: 1.62;
+  color: #33302b;
+  margin: 0 0 1em;
+}
+
+.sparkBody:last-child { margin-bottom: 0; }
+
+.sparkActions {
+  flex: none;
+  width: 19.5em;
+  margin: 1.1em auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6em;
+}
+
+.sparkPrimary,
+.sparkSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.85em 1em;
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 0.9375em;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 200ms ease;
+}
+
+.sparkPrimary {
+  color: #ffffff;
+  background-color: #d2694e;
+  border: 0;
+}
+
+.sparkPrimary:hover { background-color: #c25d43; }
+
+.sparkSecondary {
+  color: #f2f0eb;
+  background-color: transparent;
+  border: 1px solid #3d3a36;
+}
+
+.sparkSecondary:hover { background-color: #262422; }
+
+.sparkPrimary:focus-visible,
+.sparkSecondary:focus-visible,
+.booksPopupClose:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* --- "today's books" popup --- */
+
+.booksPopup {
+  position: absolute;
+  left: 1.5em;
+  right: 1.5em;
+  bottom: 2em;
+  z-index: 6;
+  padding: 1.3em 1.3em 1.1em;
+  background-color: #f7f5f1;
+  border-radius: 1.25em;
+  box-shadow: 0 1.25em 3em rgba(0, 0, 0, 0.5);
+  animation: sheetIn 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.booksPopupTitle {
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 1em;
+  font-weight: 600;
+  color: #1f1d1a;
+  margin: 0 0 0.5em;
+}
+
+.booksPopupBody {
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;
+  line-height: 1.6;
+  color: #4a463f;
+  margin: 0 0 1.1em;
+}
+
+.booksPopupClose {
+  width: 100%;
+  padding: 0.7em 1em;
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 0.875em;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #2b2825;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.booksPopupClose:hover { background-color: #1f1d1a; }
+
+@media (prefers-reduced-motion: reduce) {
+  .craftingDots span,
+  .booksPopup { animation: none; }
+}
+
+/* --- Daily Review intro --------------------------------------------------
+   The ritual explained before the cards, so fifteen passages in a row read as
+   a session with a shape rather than an arbitrary stack. Sized to the review
+   card so the panel doesn't jump when the review starts. */
+
+.introArea {
+  flex: none;
+  width: 18em;
+  min-height: 30.375em;
+  margin: 1.5em auto 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.introSteps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75em;
+}
+
+.introStep {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85em;
+}
+
+.introNum {
+  flex: none;
+  width: 1.75em;
+  height: 1.75em;
+  display: grid;
+  place-items: center;
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #c2563a;
+  background-color: #f4ede8;
+  border: 1px solid #ecdcd3;
+  border-radius: 50%;
+}
+
+.introHead {
+  display: block;
+  font-family: "Epilogue", "Inter", sans-serif;
+  font-size: 0.9375em;      /* 15px */
+  font-weight: 600;
+  line-height: 1.3;
+  color: #1f1d1a;
+  margin-bottom: 0.35em;
+}
+
+.introBody {
+  display: block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.8125em;      /* 13px */
+  line-height: 1.6;
+  color: #6d6862;
+}

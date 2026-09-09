@@ -1,17 +1,81 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Sun, Moon, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "../components/Button";
 import { useThemeMode } from "../helpers/themeMode";
+import { useScrollReveal } from "../helpers/useScrollReveal";
+import { FeatureDemo } from "../components/FeatureDemo";
+import { FEATURE_DEMOS, type FeatureDemoId } from "../components/featureDemos";
+import { DailyReviewDemo } from "../components/DailyReviewDemo";
 import styles from "./_index.module.css";
+
+// Portrait phones get a natively-framed 9:16 clip rather than a hard crop of
+// the 16:9 one. Keep this in step with the matching query in _index.module.css.
+const HERO_MOBILE_QUERY = "(max-width: 900px) and (orientation: portrait)";
+
+const HERO_DESKTOP = {
+  src: "/video/hero-dek-bg.mp4",
+  poster: "/video/hero-dek-bg-poster.jpg",
+};
+const HERO_MOBILE = {
+  src: "/video/hero-mob-bg.mp4",
+  poster: "/video/hero-mob-bg-poster.jpg",
+};
+
+const resolveHeroSource = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia &&
+  window.matchMedia(HERO_MOBILE_QUERY).matches
+    ? HERO_MOBILE
+    : HERO_DESKTOP;
 
 export default function LandingPage() {
   const { resolvedMode, switchToLightMode, switchToDarkMode } = useThemeMode();
 
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [heroSource, setHeroSource] = useState(resolveHeroSource);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
+    const query = window.matchMedia(HERO_MOBILE_QUERY);
+    const apply = () => setHeroSource(query.matches ? HERO_MOBILE : HERO_DESKTOP);
+
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
+
+  // Respect prefers-reduced-motion: hold the clip on its first frame, which is
+  // the same image as the poster, so the hero still reads as intended.
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video || typeof window === "undefined" || !window.matchMedia) return;
+
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => {
+      if (query.matches) {
+        video.pause();
+      } else {
+        void video.play().catch(() => {});
+      }
+    };
+
+    apply();
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, [heroSource.src]);
+
   const [showPlayStoreQR, setShowPlayStoreQR] = useState(false);
   const [showAppStoreQR, setShowAppStoreQR] = useState(false);
   const [showMoreReviews, setShowMoreReviews] = useState(false);
+  const [openDemo, setOpenDemo] = useState<FeatureDemoId | null>(null);
+  // Daily Review has its own flow rather than a FEATURE_DEMOS entry.
+  const [reviewOpen, setReviewOpen] = useState(false);
+
+  // Re-scan when the review list expands so the extra cards reveal too.
+  const revealRoot = useScrollReveal<HTMLDivElement>([showMoreReviews]);
   const [activeReaderGroup, setActiveReaderGroup] = useState<null | "A" | "B" | "C" | "overlap">(null);
 
   const readerGroupDescriptions: Record<"A" | "B" | "C" | "overlap", string> = {
@@ -50,8 +114,14 @@ export default function LandingPage() {
     document.getElementById("cta-section")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // "Try it first" sends readers to the feature ladder, where the interactive
+  // demos are, rather than straight to the download.
+  const scrollToFeatures = () => {
+    document.getElementById("features-section")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className={styles.pageWrapper}>
+    <div className={styles.pageWrapper} ref={revealRoot}>
       <Helmet>
         <title>2Read | Your highlights, thinking with you.</title>
         <meta name="description" content="2Read captures your Kindle highlights and turns them into beautiful, swipeable cards you'll actually revisit." />
@@ -180,6 +250,25 @@ export default function LandingPage() {
       <main>
         {/* HERO SECTION */}
         <section className={styles.heroSection} aria-label="Hero">
+          <div className={styles.heroMedia} aria-hidden="true">
+            <video
+              ref={heroVideoRef}
+              className={styles.heroVideo}
+              key={heroSource.src}
+              src={heroSource.src}
+              poster={heroSource.poster}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              tabIndex={-1}
+            />
+            <div className={styles.heroVeil} />
+            <div className={styles.heroFade} />
+          </div>
+
           <div className={styles.container}>
             <div className={styles.heroCopy}>
               <h1 className={styles.heroTitle}>
@@ -191,6 +280,9 @@ export default function LandingPage() {
               <div className={styles.heroAction}>
                 <Button className={styles.downloadBtn} size="lg" onClick={scrollToCTA}>
                   Download for Free
+                </Button>
+                <Button className={styles.tryFirstBtn} size="lg" onClick={scrollToFeatures}>
+                  Try it first
                 </Button>
               </div>
             </div>
@@ -215,22 +307,25 @@ export default function LandingPage() {
         {/* SECTION I — THE PROMISE */}
         <section className={styles.editorialSection} aria-label="The promise">
           <div className={styles.editorialWrap}>
-            <div className={styles.editorialMarker}>I</div>
-            <h2 className={styles.editorialTitle}>
+            <div className={styles.editorialMarker} data-reveal="fade">I</div>
+            <h2 className={styles.editorialTitle} data-reveal="rise">
               You underlined the best parts of every book.<br />
-              <span className={styles.accentItalic}>Then you closed it, and that was that.</span>
+              {/* the turn of the sentence lands a beat later, and softer */}
+              <span className={styles.accentItalic} data-reveal="fade" style={{ "--reveal-delay": "420ms" } as React.CSSProperties}>
+                Then you closed it, and that was that.
+              </span>
             </h2>
             <div className={styles.editorialTurn}>
-              <p className={styles.editorialBody}>
+              <p className={styles.editorialBody} data-reveal="rise">
                 The highlights are still there. You're just never going to open that notebook again. It was never a storage problem — Kindle already keeps them. It's that a list of old highlights gives you no reason to return. So you don't, and slowly everything you read becomes something you used to know.
               </p>
-              <p className={styles.editorialBodyMuted}>
-                2Read is the thing in between. It takes what you underline and turns it into something that stays with you — read, revisited, and understood, a few minutes at a time.
+              <p className={styles.editorialBodyMuted} data-reveal="rise" style={{ "--reveal-delay": "140ms" } as React.CSSProperties}>
+                2Read is the thing in between. It takes what you underline and turns it into something that stays with you. Read, revisited, and understood, a few minutes at a time.
               </p>
             </div>
 
-            <div className={styles.diagramLabel}>How it works</div>
-            <div className={styles.bridgeDiagram}>
+            <div className={styles.diagramLabel} data-reveal="fade">How it works</div>
+            <div className={styles.bridgeDiagram} data-reveal-group="bridge">
               <svg viewBox="0 0 640 300" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="bridgeFan" x1="246" y1="150" x2="580" y2="150" gradientUnits="userSpaceOnUse">
@@ -238,23 +333,24 @@ export default function LandingPage() {
                     <stop offset="1" stopColor="var(--text-main)" stopOpacity="0.14" />
                   </linearGradient>
                   <marker id="bridgeArrow" markerWidth="11" markerHeight="11" refX="6" refY="5.5" orient="auto">
-                    <path d="M0,0 L9,5.5 L0,11 z" style={{ fill: "var(--text-main)" }} />
+                    <path className={styles.bridgeArrowHead} d="M0,0 L9,5.5 L0,11 z" style={{ fill: "var(--text-main)" }} />
                   </marker>
                 </defs>
-                <path d="M246 150 L560 52 Q592 150 560 248 Z" fill="url(#bridgeFan)" />
-                <line x1="60" y1="92" x2="590" y2="257" style={{ stroke: "var(--text-main)" }} strokeWidth="1.4" markerEnd="url(#bridgeArrow)" />
-                <line x1="60" y1="208" x2="590" y2="43" style={{ stroke: "var(--text-main)" }} strokeWidth="1.4" markerEnd="url(#bridgeArrow)" />
-                <text x="74" y="83" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" transform="rotate(17 74 83)">YOUR HIGHLIGHTS</text>
-                <text x="74" y="225" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" transform="rotate(-17 74 225)">A BEAUTIFUL SYSTEM</text>
-                <text x="430" y="156" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" fontWeight="500">IDEAS THAT STAY</text>
+                <path className={styles.bridgeFan} d="M246 150 L560 52 Q592 150 560 248 Z" fill="url(#bridgeFan)" />
+                {/* pathLength=1 normalises the dash maths so both lines draw at the same rate */}
+                <line className={`${styles.bridgeLine} ${styles.bridgeLineA}`} pathLength="1" x1="60" y1="92" x2="590" y2="257" style={{ stroke: "var(--text-main)" }} strokeWidth="1.4" markerEnd="url(#bridgeArrow)" />
+                <line className={`${styles.bridgeLine} ${styles.bridgeLineB}`} pathLength="1" x1="60" y1="208" x2="590" y2="43" style={{ stroke: "var(--text-main)" }} strokeWidth="1.4" markerEnd="url(#bridgeArrow)" />
+                <text className={`${styles.bridgeLabel} ${styles.bridgeLabelA}`} x="74" y="83" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" transform="rotate(17 74 83)">YOUR HIGHLIGHTS</text>
+                <text className={`${styles.bridgeLabel} ${styles.bridgeLabelB}`} x="74" y="225" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" transform="rotate(-17 74 225)">A BEAUTIFUL SYSTEM</text>
+                <text className={`${styles.bridgeLabel} ${styles.bridgeLabelC}`} x="430" y="156" style={{ fill: "var(--text-main)" }} fontFamily="'Inter', sans-serif" fontSize="13.5" letterSpacing="1.6" fontWeight="500">IDEAS THAT STAY</text>
               </svg>
             </div>
 
             <div className={styles.sideloadBlock}>
-              <p className={styles.sideloadLead}>
+              <p className={styles.sideloadLead} data-reveal="rise">
                 And not just the books you bought. <b>The ones you sideloaded too</b> — the part no other tool can reach.
               </p>
-              <div className={styles.sideloadSteps}>
+              <div className={styles.sideloadSteps} data-reveal-group="chain">
                 <span className={styles.sideloadStep}>Open the Kindle app</span>
                 <span className={styles.sideloadArrow}>→</span>
                 <span className={styles.sideloadStep}>the book's <b>···</b> menu</span>
@@ -265,12 +361,12 @@ export default function LandingPage() {
                 <span className={styles.sideloadArrow}>→</span>
                 <span className={`${styles.sideloadStep} ${styles.sideloadStepAccent}`}>2Read</span>
               </div>
-              <p className={styles.sideloadFoot}>
-                Any PDF, ePub, or document you've sent to Kindle. No cables, no browser extension, no laptop, no export files — just your phone and ten seconds. And no Kindle device required; the free Kindle app is enough.
+              <p className={styles.sideloadFoot} data-reveal="fade">
+                Any PDF, ePub, or document you've sent to Kindle. No cables, no browser extension, no laptop, no export files. Just your phone and ten seconds. And no Kindle device required; the free Kindle app is enough.
               </p>
             </div>
 
-            <div className={styles.kindleSetupCallout}>
+            <div className={styles.kindleSetupCallout} data-reveal="rise">
               <p className={styles.kindleSetupHeadline}>Don't own a Kindle? You don't need one.</p>
               <Link to="/for-you" className={styles.kindleSetupLink}>
                 See how to set this up with the free Kindle app <span className={styles.kindleSetupArrow}>→</span>
@@ -280,41 +376,45 @@ export default function LandingPage() {
         </section>
 
         {/* SECTION II — THE THINKING PARTNER */}
-        <section className={styles.editorialSection} aria-label="Thinking partner">
+        <section id="features-section" className={styles.editorialSection} aria-label="Thinking partner">
           <div className={styles.editorialWrap}>
-            <div className={styles.editorialMarker}>II</div>
-            <h2 className={styles.editorialTitle}>Less a library. More a thinking partner.</h2>
-            <p className={styles.ladderIntro}>
-              A companion doesn't just hold your reading — it thinks alongside it, at whatever scale you're reading. Meaning builds in four steps, and there's something waiting at each one.
+            <div className={styles.editorialMarker} data-reveal="fade">II</div>
+            <h2 className={styles.editorialTitle} data-reveal="rise">Less a place to store your reading. More a place to think with it.</h2>
+            <p className={styles.ladderIntro} data-reveal="rise" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
+              A companion doesn't just hold your reading. It thinks alongside it, at whatever scale you're reading. Meaning builds in four steps, and there's something waiting at each one.
             </p>
 
             {[
               {
                 scale: "Word",
                 name: "Smart Dictionary",
+                demo: "smart-dictionary" as const,
                 q: "What does this actually mean, here?",
-                a: <>Select a word or a phrase and get its meaning <b>in this passage</b> — the sense the author intended, not the flat dictionary default. It works even on the terms authors coin, the ones no dictionary lists.</>,
+                a: <>Select a word or a phrase and get its meaning <b>in this passage</b>, the sense the author intended rather than the flat dictionary default. It works even on the terms authors coin, the ones no dictionary lists.</>,
               },
               {
                 scale: "Passage",
-                name: "Insight",
+                name: "Unpack",
+                demo: "unpack" as const,
                 q: "Help me actually take this in.",
-                a: <><b>Unpacks the highlight</b> — puts it in simpler terms when it needs them, adds a little context, gives you an example. The dense sentence you underlined and half-understood becomes one you hold onto.</>,
+                a: <><b>Unpacks the highlight.</b> Puts it in simpler terms when it needs them, adds a little context, gives you an example. The dense sentence you underlined and half-understood becomes one you hold onto.</>,
               },
               {
                 scale: "Book",
                 name: "Synthesis",
+                demo: "synthesis" as const,
                 q: "What was this whole book, to me?",
-                a: <><b>Draws the book together through your own highlights</b> — not a generic summary, but a synthesis of the parts you chose to keep. And you can tell it what to focus on.</>,
+                a: <><b>Draws the book together through your own highlights.</b> Not a generic summary, but a synthesis of the parts you chose to keep. And you can tell it what to focus on.</>,
               },
               {
                 scale: "Library",
                 name: "Wisdom Spark",
+                reviewDemo: true as const,
                 q: "What does this connect to, across everything I've read?",
-                a: <><b>Reaches across your entire library</b> for a connection you'd never have drawn yourself — one highlight, linked to a thinker, a discipline, or a book you read years ago.</>,
+                a: <><b>Reaches across your entire library</b> for a connection you'd never have drawn yourself, linking one highlight to a thinker, a discipline, or a book you read years ago.</>,
               },
             ].map((r) => (
-              <div key={r.scale} className={styles.ladderRung}>
+              <div key={r.scale} className={styles.ladderRung} data-reveal-group="rung">
                 <div className={styles.ladderScale}>
                   <span className={styles.ladderScaleLabel}>{r.scale}</span>
                   {r.name}
@@ -322,11 +422,29 @@ export default function LandingPage() {
                 <div>
                   <p className={styles.ladderQ}>{r.q}</p>
                   <p className={styles.ladderA}>{r.a}</p>
+                  {"reviewDemo" in r && r.reviewDemo && (
+                    <button
+                      type="button"
+                      className={styles.ladderDemoBtn}
+                      onClick={() => setReviewOpen(true)}
+                    >
+                      See how Daily Review works
+                    </button>
+                  )}
+                  {"demo" in r && r.demo && (
+                    <button
+                      type="button"
+                      className={styles.ladderDemoBtn}
+                      onClick={() => setOpenDemo(r.demo)}
+                    >
+                      {FEATURE_DEMOS[r.demo].triggerLabel}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
 
-            <p className={styles.ladderClose}>
+            <p className={styles.ladderClose} data-reveal="settle">
               Word, passage, book, library. <span className={styles.accentItalic}>That's not a feature list — it's the shape of how thinking with someone actually works.</span>
             </p>
           </div>
@@ -335,14 +453,14 @@ export default function LandingPage() {
         {/* SECTION III — WHO THE PARTNER SERVES */}
         <section className={styles.editorialSection} aria-label="Who the partner serves">
           <div className={styles.editorialWide}>
-            <div className={styles.editorialMarker}>III</div>
-            <h2 className={styles.editorialTitle}>It's a companion for every reader. A thinking partner for some.</h2>
-            <p className={styles.readersIntro}>
-              The daily review, the ritual, the keeping — that works for anyone who underlines. But the AI, the part that explains and connects, has the most to do where the reading is dense. Which is to say: non-fiction.
+            <div className={styles.editorialMarker} data-reveal="fade">III</div>
+            <h2 className={styles.editorialTitle} data-reveal="rise">For every reader. Sharpest for the ones who read dense.</h2>
+            <p className={styles.readersIntro} data-reveal="rise" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>
+              The daily review, the ritual, the keeping all work for anyone who underlines. But the AI, the part that explains and connects, has the most to do where the reading is dense. Which is to say: non-fiction.
             </p>
 
-            <div className={styles.diagramLabel}>Where the thinking partner (AI) does its best work</div>
-            <div className={styles.readerDiagram}>
+            <div className={styles.diagramLabel} data-reveal="fade">Where the thinking partner (AI) does its best work</div>
+            <div className={styles.readerDiagram} data-reveal-group="readers">
               <svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <radialGradient id="readerA" cx="50%" cy="50%" r="50%">
@@ -363,6 +481,7 @@ export default function LandingPage() {
                 </defs>
 
                 <g
+                  className={`${styles.readerCircle} ${styles.readerCircleA}`}
                   style={{ cursor: "pointer" }}
                   onMouseEnter={() => handleGroupEnter("A")}
                   onMouseLeave={handleGroupLeave}
@@ -373,6 +492,7 @@ export default function LandingPage() {
                 </g>
 
                 <g
+                  className={`${styles.readerCircle} ${styles.readerCircleB}`}
                   style={{ cursor: "pointer" }}
                   onMouseEnter={() => handleGroupEnter("B")}
                   onMouseLeave={handleGroupLeave}
@@ -383,6 +503,7 @@ export default function LandingPage() {
                 </g>
 
                 <g
+                  className={`${styles.readerCircle} ${styles.readerCircleC}`}
                   style={{ cursor: "pointer" }}
                   onMouseEnter={() => handleGroupEnter("C")}
                   onMouseLeave={handleGroupLeave}
@@ -392,7 +513,7 @@ export default function LandingPage() {
                   <circle cx="450" cy="430" r="95" fill="none" stroke="#B5A088" strokeOpacity="0.45" strokeWidth="1" />
                 </g>
 
-                <g style={{ pointerEvents: "none" }}>
+                <g className={styles.readerLabels} style={{ pointerEvents: "none" }}>
                   {/* Reader A labels — left-aligned block, visually centered in circle A */}
                   <text x="300" y="152" style={{ fill: "var(--text-muted)" }} fontFamily="'Inter', sans-serif" fontSize="11.5" letterSpacing="0.16em">READER A</text>
                   <text x="300" y="184" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Self-help</text>
@@ -418,25 +539,25 @@ export default function LandingPage() {
                   <text x="450" y="458" textAnchor="middle" style={{ fill: "var(--text-main)" }} fontFamily="'Newsreader', serif" fontSize="18">Memoir · Essays</text>
 
                   {/* Left "works beautifully" — parked in the outer empty space, well above C */}
-                  <path d="M195 380 Q220 360 245 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <path d="M245 335 l-13 -1 M245 335 l-4 12" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <text x="20" y="395" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="28" fontWeight="500">works beautifully</text>
+                  <path className={`${styles.readerNoteLine} ${styles.readerNoteLine1}`} pathLength="1" d="M195 380 Q220 360 245 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <path className={`${styles.readerNoteTip} ${styles.readerNoteTip1}`} d="M245 335 l-13 -1 M245 335 l-4 12" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <text className={`${styles.readerNote} ${styles.readerNote1}`} x="20" y="395" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="28" fontWeight="500">works beautifully</text>
 
                   {/* Right "works beautifully" — mirror */}
-                  <path d="M705 380 Q680 360 655 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <path d="M655 335 l13 -1 M655 335 l4 12" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
-                  <text x="880" y="395" textAnchor="end" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="28" fontWeight="500">works beautifully</text>
+                  <path className={`${styles.readerNoteLine} ${styles.readerNoteLine2}`} pathLength="1" d="M705 380 Q680 360 655 335" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <path className={`${styles.readerNoteTip} ${styles.readerNoteTip2}`} d="M655 335 l13 -1 M655 335 l4 12" fill="none" style={{ stroke: "var(--text-main)" }} strokeWidth="1.6" strokeLinecap="round" />
+                  <text className={`${styles.readerNote} ${styles.readerNote2}`} x="880" y="395" textAnchor="end" style={{ fill: "var(--text-main)" }} fontFamily="'Caveat', cursive" fontSize="28" fontWeight="500">works beautifully</text>
 
                   {/* Top "the richest reading" — navy in light, white in dark */}
-                  <path d="M450 78 Q450 128 450 180" fill="none" style={{ stroke: "var(--richest-color)" }} strokeWidth="1.8" strokeLinecap="round" />
-                  <path d="M450 180 l-8 -11 M450 180 l8 -11" fill="none" style={{ stroke: "var(--richest-color)" }} strokeWidth="1.8" strokeLinecap="round" />
-                  <text x="450" y="58" textAnchor="middle" style={{ fill: "var(--richest-color)" }} fontFamily="'Caveat', cursive" fontSize="34" fontWeight="600">the richest reading</text>
+                  <path className={`${styles.readerNoteLine} ${styles.readerNoteLine3}`} pathLength="1" d="M450 78 Q450 128 450 180" fill="none" style={{ stroke: "var(--richest-color)" }} strokeWidth="1.8" strokeLinecap="round" />
+                  <path className={`${styles.readerNoteTip} ${styles.readerNoteTip3}`} d="M450 180 l-8 -11 M450 180 l8 -11" fill="none" style={{ stroke: "var(--richest-color)" }} strokeWidth="1.8" strokeLinecap="round" />
+                  <text className={`${styles.readerNote} ${styles.readerNote3}`} x="450" y="58" textAnchor="middle" style={{ fill: "var(--richest-color)" }} fontFamily="'Caveat', cursive" fontSize="34" fontWeight="600">the richest reading</text>
 
                   {/* Right side C annotation — right-aligned so it stays inside the viewbox */}
-                  <path d="M710 465 Q640 460 555 448" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
-                  <path d="M555 448 l12 -4 M555 448 l11 7" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
-                  <text x="885" y="465" textAnchor="end" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="24" fontWeight="500">lovely to revisit —</text>
-                  <text x="885" y="491" textAnchor="end" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="24" fontWeight="500">less to unpack.</text>
+                  <path className={`${styles.readerNoteLine} ${styles.readerNoteLine4}`} pathLength="1" d="M710 465 Q640 460 555 448" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
+                  <path className={`${styles.readerNoteTip} ${styles.readerNoteTip4}`} d="M555 448 l12 -4 M555 448 l11 7" fill="none" style={{ stroke: "var(--text-muted)" }} strokeWidth="1.5" strokeLinecap="round" />
+                  <text className={`${styles.readerNote} ${styles.readerNote4}`} x="885" y="465" textAnchor="end" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="24" fontWeight="500">lovely to revisit —</text>
+                  <text className={`${styles.readerNote} ${styles.readerNote4}`} x="885" y="491" textAnchor="end" style={{ fill: "var(--text-muted)" }} fontFamily="'Caveat', cursive" fontSize="24" fontWeight="500">less to unpack.</text>
                 </g>
 
                 {/* Invisible overlap interaction zone — drawn last so it captures events over A/B */}
@@ -469,10 +590,10 @@ export default function LandingPage() {
         {/* TESTIMONIALS SECTION */}
         <section className={`${styles.section} ${styles.testimonialSection}`} aria-label="Testimonials">
           <div className={styles.container}>
-            <p className={styles.testimonialEyebrow}>Reviews</p>
-            <h2 className={styles.testimonialTitle}>From readers who already use it.</h2>
+            <p className={styles.testimonialEyebrow} data-reveal="fade">Reviews</p>
+            <h2 className={styles.testimonialTitle} data-reveal="rise">From readers who already use it.</h2>
 
-            <div className={styles.testimonialGrid}>
+            <div className={styles.testimonialGrid} data-reveal-group="cards">
               {([
                 { source: "appstore", quote: "I love how this app makes my Kindle highlights actually useful. It's a game changer.", author: "Alex M" },
                 { source: "playstore", quote: "This app is amazing. It helps me in my reading profoundly.", author: "Lim Kenny" },
@@ -520,7 +641,7 @@ export default function LandingPage() {
               ))}
             </div>
 
-            <div className={styles.testimonialFooter}>
+            <div className={styles.testimonialFooter} data-reveal="fade">
               <button
                 className={styles.testimonialFooterToggle}
                 onClick={() => setShowMoreReviews(!showMoreReviews)}
@@ -540,11 +661,11 @@ export default function LandingPage() {
         <section id="cta-section" className={styles.ctaSection} aria-label="Download">
           <div className={styles.ctaCurvedTop}>
             <div className={styles.ctaContent}>
-              <h2 className={styles.ctaTitle}>Give your highlights a thinking partner.</h2>
-              <p className={styles.ctaSubtitle}>Free to download. No credit card required.</p>
-              <p className={styles.ctaSubtitleSecondary}>Built for readers who already highlight. Now those highlights have a home.</p>
+              <h2 className={styles.ctaTitle} data-reveal="rise">Your Kindle highlights, finally worth reopening.</h2>
+              <p className={styles.ctaSubtitle} data-reveal="rise" style={{ "--reveal-delay": "120ms" } as React.CSSProperties}>Free to download. No credit card required.</p>
+              <p className={styles.ctaSubtitleSecondary} data-reveal="fade" style={{ "--reveal-delay": "240ms" } as React.CSSProperties}>Built for readers who already highlight. Now those highlights have a home.</p>
 
-              <div className={styles.storeButtonsRow}>
+              <div className={styles.storeButtonsRow} data-reveal-group="stores">
                 <div className={styles.storeCol}>
                   <a href="https://play.google.com" target="_blank" rel="noopener noreferrer" className={styles.storeBadgeLink}>
                     <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Get it on Google Play" className={styles.storeBadgeImg} />
@@ -570,6 +691,17 @@ export default function LandingPage() {
         </section>
       </main>
 
+      <DailyReviewDemo open={reviewOpen} onOpenChange={setReviewOpen} />
+
+      {(Object.keys(FEATURE_DEMOS) as FeatureDemoId[]).map((id) => (
+        <FeatureDemo
+          key={id}
+          {...FEATURE_DEMOS[id]}
+          open={openDemo === id}
+          onOpenChange={(next) => setOpenDemo(next ? id : null)}
+        />
+      ))}
+
       {/* FOOTER */}
       <footer className={styles.footer} role="contentinfo">
         <div className={styles.container}>
@@ -582,7 +714,7 @@ export default function LandingPage() {
             <span className={styles.logoText}>2Read.</span>
           </div>
 
-          <div className={styles.footerBody}>
+          <div className={styles.footerBody} data-reveal="fade">
             <div className={styles.footerBadges}>
               <a
                 href="https://www.producthunt.com/products/2read-3/launches/2read-4"

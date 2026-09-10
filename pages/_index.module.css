@@ -226,7 +226,7 @@
   display: block;
   object-fit: cover;
   object-position: center 45%;
-  filter: saturate(0.85) contrast(0.96);
+  filter: saturate(0.97) contrast(0.99);
 }
 
 .heroVeil,
@@ -240,10 +240,10 @@
 .heroVeil {
   background: radial-gradient(
     ellipse 78% 60% at 50% 44%,
-    rgba(var(--page-bg-rgb), 0.88) 0%,
-    rgba(var(--page-bg-rgb), 0.70) 42%,
-    rgba(var(--page-bg-rgb), 0.26) 72%,
-    rgba(var(--page-bg-rgb), 0.06) 100%
+    rgba(var(--page-bg-rgb), 0.72) 0%,
+    rgba(var(--page-bg-rgb), 0.54) 42%,
+    rgba(var(--page-bg-rgb), 0.18) 72%,
+    rgba(var(--page-bg-rgb), 0.03) 100%
   );
 }
 
@@ -251,9 +251,9 @@
   background: linear-gradient(
     to bottom,
     rgb(var(--page-bg-rgb)) 0%,
-    rgba(var(--page-bg-rgb), 0.62) 10%,
-    rgba(var(--page-bg-rgb), 0.18) 30%,
-    rgba(var(--page-bg-rgb), 0.20) 55%,
+    rgba(var(--page-bg-rgb), 0.52) 10%,
+    rgba(var(--page-bg-rgb), 0.10) 30%,
+    rgba(var(--page-bg-rgb), 0.12) 55%,
     rgba(var(--page-bg-rgb), 0.74) 82%,
     rgb(var(--page-bg-rgb)) 97%
   );
@@ -261,16 +261,16 @@
 
 /* Dark theme: tame the bright daylight clip against the near-black page */
 :global(.dark) .heroVideo {
-  filter: saturate(0.78) brightness(0.66) contrast(1.02);
+  filter: saturate(0.88) brightness(0.74) contrast(1.02);
 }
 
 :global(.dark) .heroVeil {
   background: radial-gradient(
     ellipse 78% 60% at 50% 44%,
-    rgba(var(--page-bg-rgb), 0.86) 0%,
-    rgba(var(--page-bg-rgb), 0.66) 42%,
-    rgba(var(--page-bg-rgb), 0.30) 72%,
-    rgba(var(--page-bg-rgb), 0.10) 100%
+    rgba(var(--page-bg-rgb), 0.70) 0%,
+    rgba(var(--page-bg-rgb), 0.50) 42%,
+    rgba(var(--page-bg-rgb), 0.20) 72%,
+    rgba(var(--page-bg-rgb), 0.05) 100%
   );
 }
 
@@ -279,9 +279,9 @@
   .heroVeil {
     background: linear-gradient(
       to bottom,
-      rgba(var(--page-bg-rgb), 0.72) 0%,
-      rgba(var(--page-bg-rgb), 0.80) 45%,
-      rgba(var(--page-bg-rgb), 0.72) 100%
+      rgba(var(--page-bg-rgb), 0.56) 0%,
+      rgba(var(--page-bg-rgb), 0.64) 45%,
+      rgba(var(--page-bg-rgb), 0.56) 100%
     );
   }
 }
@@ -326,11 +326,19 @@
 .heroSubtitle {
   font-family: var(--font-sans);
   font-size: 1.0625rem;
-  color: var(--text-muted);
+  /* Darker than --text-muted on purpose: this line sits over the clip, and
+     since the scrim was lightened it now falls on bright cloud rather than
+     flat page colour, where the muted grey stops being readable. Still
+     clearly secondary to the title. */
+  color: #4d4842;
   max-width: 52ch;
   margin: 0 auto 2.75rem;
   line-height: 1.7;
   text-wrap: pretty;
+}
+
+:global(.dark) .heroSubtitle {
+  color: rgba(240, 239, 235, 0.78);
 }
 
 @media (max-width: 900px) {

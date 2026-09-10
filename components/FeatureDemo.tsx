@@ -59,6 +59,14 @@ export interface FeatureDemoConfig {
   /* summary layout */
   /** Small line under the author, e.g. "One summary · 3 of 6 lenses". */
   caption?: string;
+  /** Shown before the summaries: whose highlights these are, and what the
+   *  three things a reader can ask for actually are. */
+  intro?: {
+    title: string;
+    byline: string;
+    items: { head: string; body: string }[];
+    action: string;
+  };
   /** Lenses the real app offers. The demo carries a subset; the rest are
    *  surfaced as a non-interactive chip so the reader knows they exist. */
   lensTotal?: number;
@@ -93,6 +101,7 @@ export function FeatureDemo({
   targetKind,
   caption,
   lensTotal,
+  intro,
   examples,
 }: FeatureDemoProps) {
   const isSummary = layout === "summary";
@@ -122,6 +131,8 @@ export function FeatureDemo({
   const example = examples[index];
   const { book, byline, counter, location, quote } = example;
   const keyIsTarget = targetKind === "actionKey";
+  // the intro carries its own heading, so the shell's would double up
+  const showIntro = isSummary && !!intro && step === "target";
   const wordIsTarget = targetKind === "word";
   const word = example.word;
 
@@ -184,11 +195,41 @@ export function FeatureDemo({
       label={label}
       footer={footer}
     >
-              <p className={styles.bookTitle}>{book}</p>
-              <p className={styles.bookByline}>{byline}</p>
-              {caption && <p className={styles.bookCaption}>{caption}</p>}
+              {!showIntro && (
+                <>
+                  <p className={styles.bookTitle}>{book}</p>
+                  <p className={styles.bookByline}>{byline}</p>
+                  {caption && <p className={styles.bookCaption}>{caption}</p>}
+                </>
+              )}
 
-              {isSummary ? (
+              {showIntro && intro ? (
+                <>
+                  <p className={styles.bookTitle}>{intro.title}</p>
+                  <p className={styles.bookByline}>{intro.byline}</p>
+
+                  <div className={styles.introArea}>
+                    <ul className={styles.introList}>
+                      {intro.items.map((item) => (
+                        <li key={item.head}>
+                          <span className={styles.introHead}>{item.head}</span>
+                          <span className={styles.introBody}>{item.body}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className={styles.sparkTriggerSlot}>
+                    <button
+                      type="button"
+                      className={styles.sparkTrigger}
+                      onClick={() => setStep("result")}
+                    >
+                      {intro.action}
+                    </button>
+                  </div>
+                </>
+              ) : isSummary ? (
                 <>
                   <div className={styles.tabs} role="tablist" aria-label="Summaries">
                     {examples.map((ex, i) => (

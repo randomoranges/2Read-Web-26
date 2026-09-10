@@ -102,7 +102,7 @@ interface DemoShellProps {
  * undershoot it and the panel overflows a short window, which centring then
  * clips at the top.
  */
-const PANEL_EM = 56;
+const PANEL_EM = 58;
 
 export function DemoShell({
   open,
@@ -154,6 +154,10 @@ export function DemoShell({
             </div>
 
             {footer}
+
+            <p className={styles.provenance}>
+              Real outputs, from my own highlights
+            </p>
 
             <div className={styles.languages}>
               <p className={styles.languagesLabel}>Works in</p>

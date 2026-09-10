@@ -142,6 +142,16 @@ This reframes how you approach difficulty. Instead of asking “How do I get aro
     // over a highlight card: title and author at the top, then the summary.
     layout: "summary",
     caption: "One summary · 3 of 6 lenses",
+    intro: {
+      title: "Synthesis",
+      byline: "Chop Wood Carry Water · 37 highlights",
+      items: [
+        { head: "General", body: "The whole book, through your highlights." },
+        { head: "Lenses", body: "The same highlights, read another way." },
+        { head: "Direct Inquiry", body: "Ask your own question about the book." },
+      ],
+      action: "Read the summaries",
+    },
     /** How many lenses the app actually offers; the demo carries three. */
     lensTotal: 6,
     examples: [

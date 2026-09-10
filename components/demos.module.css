@@ -827,12 +827,23 @@
   white-space: nowrap;
 }
 
-/* --- supported languages ------------------------------------------------- */
+/* --- provenance + supported languages ------------------------------------ */
+
+/* Said once here rather than per demo: none of the answers in these demos are
+   mocked up. Sits with the language line because both are notes about the
+   demos rather than part of the phone. */
+.provenance {
+  font-family: "Inter", sans-serif;
+  font-size: 0.625em;       /* 10px */
+  color: rgba(255, 255, 255, 0.5);
+  text-align: center;
+  margin: 1.1em 0 0;
+}
 
 .languages {
   /* breaks out of the 22.5em phone column so the line fits on desktop */
   width: min(46em, 88vw);
-  margin: 1em 0 0;
+  margin: 0.5em 0 0;
   margin-left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -1238,4 +1249,14 @@
   font-size: 0.8125em;      /* 13px */
   line-height: 1.6;
   color: #6d6862;
+}
+
+/* Synthesis intro: what a reader can ask the book for, in three lines */
+.introList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6em;
 }
